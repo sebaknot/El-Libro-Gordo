@@ -95,6 +95,15 @@ const CARRIER_MAP: Record<string, string> = {
   flblue: "Florida Blue",
   floridablue: "Florida Blue",
   wellcare: "Wellcare",
+  // Spreadsheet typos and carrier-transition annotations → current carrier
+  ambette: "Ambetter",
+  ametter: "Ambetter",
+  ambettervienedemolina: "Ambetter",
+  cignaambetter: "Ambetter",
+  oscarambetter: "Ambetter",
+  cignaoscar: "Oscar",
+  molinaaoscar: "Oscar",
+  aetnaysefue: "Aetna",
 };
 
 function normalizeCarrier(raw: string): string | null {
