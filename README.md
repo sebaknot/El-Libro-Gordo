@@ -71,10 +71,34 @@ plan_year, policy_number, monthly_premium, subsidy`.
 
 Import the repo in Vercel, add the four env vars, deploy. HTTPS is automatic.
 
+## Phase 2 — Magic-link verification (shipped)
+
+Staff generate tokenized links per household (**Links** page): uuid token,
+14-day expiry, max 3 uses, with ready-to-send bilingual SMS/WhatsApp message
+text (manual send until Twilio lands in Phase 3). The client flow at
+`/v/{token}` is mobile-first and Spanish-default with a language toggle:
+
+1. **DOB gate** — primary member's date of birth; 5 failures lock the link
+   and open a staff task. Success sets a 30-minute HMAC-signed session cookie
+   scoped to that token.
+2. **Confirm page** — masked data only (first name + last initial, income on
+   file, plan). No SSN, no full DOB, ever.
+3. **Two paths** — "Todo sigue igual" one-tap, or "Algo cambió" structured
+   form: income, employment, address, contact, household add/remove, optional
+   income-proof photo upload (private bucket).
+4. **Consent** — versioned CMS-style consent text stored verbatim on the
+   response (`consent_text_shown`), plus IP and user agent. Responses are
+   append-only at the database level.
+5. **Review queue** (**Reviews** page) — side-by-side on-file vs. reported
+   diff; *Approve & apply* updates household/client records, adds new members
+   as pending clients, auto-logs a note, and closes the review task.
+
+Every step writes audit_log rows (`link_opened`, `link_submitted`,
+`login_failed`) with `actor_type = client_link`.
+
 ## Phase roadmap
 
-Schema for Phases 2–5 (verification links/responses, campaigns, pipeline,
-messages, commissions) already ships in the migration so later phases are
-additive. Next up: Phase 2 — magic-link verification flow. Also kick off
-Twilio A2P 10DLC and WhatsApp Business registration now; approval takes weeks
-(needed for Phase 3).
+Schema for Phases 3–5 (campaigns, pipeline, messages, commissions) already
+ships in the migration so later phases are additive. Next up: Phase 3 —
+communications hub. Kick off Twilio A2P 10DLC and WhatsApp Business
+registration now; approval takes weeks.

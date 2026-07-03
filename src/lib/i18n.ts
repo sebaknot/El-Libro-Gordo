@@ -28,6 +28,10 @@ const dictionaries = {
     activePolicies: "Active policies",
     needsCleanup: "Data cleanup",
     language: "Español",
+    links: "Links",
+    reviews: "Reviews",
+    needsReview: "Needs review",
+    generateLinks: "Generate links",
   },
   es: {
     dashboard: "Panel",
@@ -54,6 +58,10 @@ const dictionaries = {
     activePolicies: "Pólizas activas",
     needsCleanup: "Limpieza de datos",
     language: "English",
+    links: "Enlaces",
+    reviews: "Revisiones",
+    needsReview: "Por revisar",
+    generateLinks: "Generar enlaces",
   },
 } satisfies Record<Locale, Record<string, string>>;
 

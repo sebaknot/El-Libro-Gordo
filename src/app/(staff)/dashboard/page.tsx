@@ -6,11 +6,15 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const { t } = await getDict();
 
-  const [clients, households, policies, tasks, cleanup] = await Promise.all([
+  const [clients, households, policies, tasks, reviews, cleanup] = await Promise.all([
     supabase.from("clients").select("id", { count: "exact", head: true }).eq("status", "active"),
     supabase.from("households").select("id", { count: "exact", head: true }),
     supabase.from("policies").select("id", { count: "exact", head: true }).eq("status", "active"),
     supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "open"),
+    supabase
+      .from("verification_responses")
+      .select("id", { count: "exact", head: true })
+      .eq("reviewed", false),
     supabase
       .from("tasks")
       .select("id, title, detail, client_id, household_id, due_date")
@@ -24,6 +28,7 @@ export default async function DashboardPage() {
     { label: t.activeClients, value: clients.count ?? 0, href: "/clients" },
     { label: t.households, value: households.count ?? 0, href: "/households" },
     { label: t.activePolicies, value: policies.count ?? 0, href: "/clients" },
+    { label: t.needsReview, value: reviews.count ?? 0, href: "/reviews" },
     { label: t.openTasks, value: tasks.count ?? 0, href: "/tasks" },
   ];
 
@@ -31,7 +36,7 @@ export default async function DashboardPage() {
     <div>
       <h1 className="text-2xl font-bold">{t.dashboard}</h1>
 
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
         {stats.map((s) => (
           <Link
             key={s.label}
