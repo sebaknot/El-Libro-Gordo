@@ -33,12 +33,35 @@ the homepage, so no new page was added.
 
 ### Site 2 — enrollment site (tax1a-enrollment-plan.base44.app)
 
+**Batch 1 — brand only.**
+
 | Paste this file | Into this Base44 path |
 |---|---|
 | `site2-enrollment/Layout.js` | `Layout.js` (root) |
 
-That is the whole change. Flow logic, Stripe links, agreement text, and the
-existing FAQ are untouched by design.
+**Batch 2 — household add-on, agreement, confirmation polish, admin.**
+
+| Paste this file | Into this Base44 path |
+|---|---|
+| `site2-enrollment/config/planConfig.js` | `components/config/planConfig.js` — **first**, everything imports it |
+| `site2-enrollment/agreement/agreementText.js` | `components/agreement/agreementText.js` |
+| `site2-enrollment/components/HouseholdCoverageToggle.js` | `components/enroll/HouseholdCoverageToggle.js` |
+| `site2-enrollment/components/TrustBadges.js` | `components/brand/TrustBadges.js` |
+| `site2-enrollment/components/AgreementViewer.js` | `components/agreement/AgreementViewer.js` |
+| `site2-enrollment/pages/Confirmation.js` | `pages/Confirmation.js` |
+| `site2-enrollment/pages/Admin.js` | `pages/Admin.js` |
+| `site2-enrollment/components/admin/ClientDetailPanel.js` | `components/admin/ClientDetailPanel.js` |
+| `site2-enrollment/components/admin/DeleteEnrollmentDialog.js` | `components/admin/DeleteEnrollmentDialog.js` |
+| `site2-enrollment/functions/createCheckoutSession.js` | `functions/createCheckoutSession.js` — only if you take Stripe Path B |
+| `site2-enrollment/functions/stripeWebhook.js` | `functions/stripeWebhook.js` — optional, powers live billing status |
+
+Add the entity fields in `site2-enrollment/ENTITY_SCHEMA.md` before pasting the
+pages — `Admin.js` and `Confirmation.js` read `household_coverage`,
+`agreement_version` and the Stripe IDs.
+
+The enrollment flow order is unchanged (tier → form → agreement → sign → Stripe
+→ confirmation), the three base prices are unchanged, and the FAQ, testimonials
+and covered/not-covered content are untouched.
 
 ### Both apps
 
