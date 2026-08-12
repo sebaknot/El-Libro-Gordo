@@ -21,7 +21,7 @@ export default async function ClientDetailPage({
 
   const { data: client } = await supabase
     .from("clients")
-    .select(`${CLIENT_COLUMNS}, households(id, household_name, address_street, address_city, address_state, address_zip, annual_income, preferred_language)`)
+    .select(`${CLIENT_COLUMNS}, households!clients_household_id_fkey(id, household_name, address_street, address_city, address_state, address_zip, annual_income, preferred_language)`)
     .eq("id", id)
     .single();
   if (!client) notFound();

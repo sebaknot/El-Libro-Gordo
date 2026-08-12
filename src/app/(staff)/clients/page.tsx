@@ -11,7 +11,7 @@ export default async function ClientsPage() {
 
   const { data: clients } = await supabase
     .from("clients")
-    .select(`${CLIENT_COLUMNS}, households(household_name)`)
+    .select(`${CLIENT_COLUMNS}, households!clients_household_id_fkey(household_name)`)
     .order("last_name")
     .limit(50);
 

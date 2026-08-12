@@ -25,7 +25,7 @@ export async function GET() {
     .from("clients")
     .select(
       `${CLIENT_COLUMNS},
-       households(household_name, address_street, address_city, address_state, address_zip,
+       households!clients_household_id_fkey(household_name, address_street, address_city, address_state, address_zip,
                   annual_income, household_size, preferred_language, preferred_channel),
        policies(plan_name, plan_type, plan_year, monthly_premium, subsidy_amount, net_premium,
                 policy_number, status, carriers(name))`

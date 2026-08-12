@@ -8,7 +8,7 @@ export default async function HouseholdsPage() {
 
   const { data: households } = await supabase
     .from("households")
-    .select("id, household_name, address_city, address_state, household_size, annual_income, preferred_language, clients(id)")
+    .select("id, household_name, address_city, address_state, household_size, annual_income, preferred_language, clients!clients_household_id_fkey(id)")
     .order("household_name")
     .limit(200);
 
