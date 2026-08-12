@@ -38,11 +38,16 @@ export async function createClientRecord(formData: FormData) {
 
   const ssn = field(formData, "ssn").replace(/\D/g, "");
   if (ssn.length === 9) {
-    await supabase.rpc("set_client_ssn", {
+    const { error: ssnError } = await supabase.rpc("set_client_ssn", {
       p_client_id: data.id,
       p_ssn: ssn,
       p_key: process.env.SSN_ENCRYPTION_KEY!,
     });
+    if (ssnError) {
+      await logAudit("create", "client", data.id);
+      revalidatePath("/clients");
+      redirect(`/clients/${data.id}/edit?error=${encodeURIComponent("SSN not saved: " + ssnError.message)}`);
+    }
   }
 
   await logAudit("create", "client", data.id);
@@ -61,11 +66,17 @@ export async function updateClientRecord(id: string, formData: FormData) {
 
   const ssn = field(formData, "ssn").replace(/\D/g, "");
   if (ssn.length === 9) {
-    await supabase.rpc("set_client_ssn", {
+    const { error: ssnError } = await supabase.rpc("set_client_ssn", {
       p_client_id: id,
       p_ssn: ssn,
       p_key: process.env.SSN_ENCRYPTION_KEY!,
     });
+    if (ssnError) {
+      await logAudit("update", "client", id);
+      revalidatePath(`/clients/${id}`);
+      revalidatePath("/clients");
+      redirect(`/clients/${id}/edit?error=${encodeURIComponent("SSN not saved: " + ssnError.message)}`);
+    }
   }
 
   await logAudit("update", "client", id);
