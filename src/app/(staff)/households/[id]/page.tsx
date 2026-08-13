@@ -43,23 +43,23 @@ export default async function HouseholdDetailPage({
         </Link>
       </div>
 
-      <div className="mt-6 grid gap-4 rounded-xl border border-slate-200 bg-white p-5 text-sm shadow-sm sm:grid-cols-2">
+      <div className="mt-6 grid gap-4 rounded-lg border border-slate-200 bg-white p-6 text-sm shadow-sm sm:grid-cols-2">
         <p className="sm:col-span-2">
-          <span className="text-slate-500">Address:</span>{" "}
+          <span className="text-slate">Address:</span>{" "}
           {[household.address_street, household.address_city, household.address_state, household.address_zip]
             .filter(Boolean)
             .join(", ") || "—"}
         </p>
         <p>
-          <span className="text-slate-500">Annual income:</span>{" "}
+          <span className="text-slate">Annual income:</span>{" "}
           {household.annual_income != null ? `$${Number(household.annual_income).toLocaleString()}` : "—"}
           {household.income_verified_date && (
             <span className="ml-1 text-xs text-slate-400">(verified {household.income_verified_date})</span>
           )}
         </p>
-        <p><span className="text-slate-500">Household size:</span> {household.household_size ?? "—"}</p>
-        <p><span className="text-slate-500">Language:</span> {household.preferred_language}</p>
-        <p><span className="text-slate-500">Channel:</span> {household.preferred_channel ?? "—"}</p>
+        <p><span className="text-slate">Household size:</span> {household.household_size ?? "—"}</p>
+        <p><span className="text-slate">Language:</span> {household.preferred_language}</p>
+        <p><span className="text-slate">Channel:</span> {household.preferred_channel ?? "—"}</p>
       </div>
 
       <section className="mt-8">
@@ -67,14 +67,14 @@ export default async function HouseholdDetailPage({
           <h2 className="text-lg font-semibold">{t.members}</h2>
           <Link
             href={`/clients/new?household=${id}`}
-            className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700"
+            className="rounded-md bg-sapphire px-3 py-1.5 text-sm font-semibold text-white hover:bg-sapphire/90"
           >
             + {t.newClient}
           </Link>
         </div>
-        <div className="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500">
+            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
               <tr>
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">DOB</th>
@@ -86,13 +86,13 @@ export default async function HouseholdDetailPage({
               {(members ?? []).map((m) => (
                 <tr key={m.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
                   <td className="px-4 py-2">
-                    <Link href={`/clients/${m.id}`} className="font-medium text-blue-700 hover:underline">
+                    <Link href={`/clients/${m.id}`} className="font-medium text-sapphire hover:underline">
                       {m.last_name}, {m.first_name}
                     </Link>
                     {m.is_primary && <span className="ml-2 text-xs text-slate-400">primary</span>}
                   </td>
-                  <td className="px-4 py-2 text-slate-600">{m.dob ?? "—"}</td>
-                  <td className="px-4 py-2 text-slate-600">{m.phone ?? "—"}</td>
+                  <td className="px-4 py-2 text-slate">{m.dob ?? "—"}</td>
+                  <td className="px-4 py-2 text-slate">{m.phone ?? "—"}</td>
                   <td className="px-4 py-2">{STATUS_BADGE(m.status)}</td>
                 </tr>
               ))}

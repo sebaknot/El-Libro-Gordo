@@ -37,20 +37,20 @@ export default async function LinksPage({
     .limit(100);
 
   const input =
-    "mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none";
+    "mt-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sapphire focus:outline-none";
 
   return (
     <div className="max-w-5xl">
       <h1 className="text-2xl font-bold">{t.links}</h1>
 
       {created && (
-        <p className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-700">
+        <p className="mt-4 rounded-md bg-sage/10 p-3 text-sm text-sage">
           ✓ {created} link(s) generated. Send each client their link below.
         </p>
       )}
-      {error && <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+      {error && <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">{error}</p>}
 
-      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="font-semibold">{t.generateLinks}</h2>
         <form action={generateLinks} className="mt-3 space-y-4">
           <HouseholdPicker placeholder={t.search} />
@@ -68,7 +68,7 @@ export default async function LinksPage({
               <input name="days" type="number" defaultValue={14} min={1} max={60} className={input + " w-24"} />
             </div>
           </div>
-          <button className="rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          <button className="rounded-md bg-sapphire px-5 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
             {t.generateLinks}
           </button>
         </form>
@@ -96,10 +96,10 @@ export default async function LinksPage({
             : null;
 
           return (
-            <div key={link.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div key={link.id} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <Link href={`/households/${household?.id}`} className="font-medium text-blue-700 hover:underline">
+                  <Link href={`/households/${household?.id}`} className="font-medium text-sapphire hover:underline">
                     {household?.household_name ?? "—"}
                   </Link>
                   <span className="ml-2 text-xs text-slate-400">
@@ -112,7 +112,7 @@ export default async function LinksPage({
                   {STATUS_BADGE(link.status)}
                   {link.status === "active" && (
                     <form action={expireLink.bind(null, link.id)}>
-                      <button className="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-xs text-red-600 hover:bg-red-100">
+                      <button className="rounded border border-brick/30 bg-brick/5 px-2 py-0.5 text-xs text-brick hover:bg-brick/10">
                         Expire
                       </button>
                     </form>
@@ -129,7 +129,7 @@ export default async function LinksPage({
                       href={waHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded border border-green-300 bg-green-50 px-2 py-0.5 text-green-700 hover:bg-green-100"
+                      className="rounded border border-sage/40 bg-sage/10 px-2 py-0.5 text-sage hover:bg-sage/20"
                     >
                       WhatsApp →
                     </a>
@@ -140,7 +140,7 @@ export default async function LinksPage({
           );
         })}
         {(!links || links.length === 0) && (
-          <p className="rounded-xl border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
+          <p className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
             No links yet. Generate some above.
           </p>
         )}

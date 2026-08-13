@@ -24,23 +24,23 @@ export default async function TasksPage() {
         {(tasks ?? []).map((task) => (
           <li
             key={task.id}
-            className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm"
+            className="flex items-start justify-between gap-4 rounded-lg border border-slate-200 bg-white px-4 py-2.5 shadow-sm"
           >
             <div className="text-sm">
               <p className="font-medium">
                 {task.client_id ? (
-                  <Link href={`/clients/${task.client_id}`} className="text-blue-700 hover:underline">
+                  <Link href={`/clients/${task.client_id}`} className="text-sapphire hover:underline">
                     {task.title}
                   </Link>
                 ) : task.household_id ? (
-                  <Link href={`/households/${task.household_id}`} className="text-blue-700 hover:underline">
+                  <Link href={`/households/${task.household_id}`} className="text-sapphire hover:underline">
                     {task.title}
                   </Link>
                 ) : (
                   task.title
                 )}
               </p>
-              {task.detail && <p className="mt-0.5 text-slate-600">{task.detail}</p>}
+              {task.detail && <p className="mt-0.5 text-slate">{task.detail}</p>}
               <p className="mt-1 text-xs text-slate-400">
                 {task.type.replace(/_/g, " ")}
                 {task.due_date && ` · due ${task.due_date}`}
@@ -50,12 +50,12 @@ export default async function TasksPage() {
             </div>
             <div className="flex shrink-0 gap-2">
               <form action={setTaskStatus.bind(null, task.id, "done")}>
-                <button className="rounded-md border border-green-300 bg-green-50 px-3 py-1 text-xs font-medium text-green-700 hover:bg-green-100">
+                <button className="rounded-md border border-sage/40 bg-sage/10 px-3 py-1 text-xs font-medium text-sage hover:bg-sage/20">
                   Done
                 </button>
               </form>
               <form action={setTaskStatus.bind(null, task.id, "dismissed")}>
-                <button className="rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-500 hover:bg-slate-50">
+                <button className="rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate hover:bg-slate-50">
                   Dismiss
                 </button>
               </form>

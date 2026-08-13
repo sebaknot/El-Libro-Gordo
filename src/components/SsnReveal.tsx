@@ -18,7 +18,7 @@ export default function SsnReveal({ clientId }: { clientId: string }) {
 
   if (ssn) {
     return (
-      <span className="rounded bg-red-50 px-2 py-0.5 font-mono text-xs text-red-700">
+      <span className="rounded bg-brick/5 px-2 py-0.5 font-mono text-xs text-brick">
         {ssn.length === 9 ? `${ssn.slice(0, 3)}-${ssn.slice(3, 5)}-${ssn.slice(5)}` : ssn}
       </span>
     );
@@ -27,7 +27,7 @@ export default function SsnReveal({ clientId }: { clientId: string }) {
     <button
       onClick={reveal}
       disabled={busy}
-      className="rounded border border-slate-300 px-2 py-0.5 text-xs text-slate-500 hover:bg-slate-50 disabled:opacity-50"
+      className="rounded border border-slate-300 px-2 py-0.5 text-xs text-slate hover:bg-slate-50 disabled:opacity-50"
       title="Reveals the full SSN. This action is logged."
     >
       {busy ? "…" : "reveal (logged)"}

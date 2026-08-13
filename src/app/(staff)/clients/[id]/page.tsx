@@ -62,7 +62,7 @@ export default async function ClientDetailPage({
   const addNoteAction = addNote.bind(null, id, household.id);
   const uploadAction = uploadDocument.bind(null, id, household.id);
   const input =
-    "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none";
+    "w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sapphire focus:outline-none";
 
   return (
     <div className="max-w-4xl">
@@ -71,8 +71,8 @@ export default async function ClientDetailPage({
           <h1 className="text-2xl font-bold">
             {client.first_name} {client.last_name} {STATUS_BADGE(client.status)}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            <Link href={`/households/${household.id}`} className="text-blue-700 hover:underline">
+          <p className="mt-1 text-sm text-slate">
+            <Link href={`/households/${household.id}`} className="text-sapphire hover:underline">
               {household.household_name}
             </Link>
             {client.is_primary && " · primary"}
@@ -86,41 +86,41 @@ export default async function ClientDetailPage({
         </Link>
       </div>
 
-      <div className="mt-6 grid gap-4 rounded-xl border border-slate-200 bg-white p-5 text-sm shadow-sm sm:grid-cols-2">
-        <p><span className="text-slate-500">DOB:</span> {client.dob ?? "—"}</p>
+      <div className="mt-6 grid gap-4 rounded-lg border border-slate-200 bg-white p-6 text-sm shadow-sm sm:grid-cols-2">
+        <p><span className="text-slate">DOB:</span> {client.dob ?? "—"}</p>
         <p className="flex items-center gap-2">
-          <span className="text-slate-500">SSN:</span>
-          {client.ssn_last4 ? `···-··-${client.ssn_last4}` : "—"}
+          <span className="text-slate">SSN:</span>
+          <span className="num">{client.ssn_last4 ? `···-··-${client.ssn_last4}` : "—"}</span>
           {client.ssn_last4 && canRevealSsn && <SsnReveal clientId={id} />}
         </p>
-        <p><span className="text-slate-500">Phone:</span> {client.phone ?? "—"}</p>
-        <p><span className="text-slate-500">WhatsApp:</span> {client.whatsapp_phone ?? "—"}</p>
-        <p><span className="text-slate-500">Email:</span> {client.email ?? "—"}</p>
-        <p><span className="text-slate-500">Immigration doc:</span> {client.immigration_doc_type ?? "—"}</p>
+        <p><span className="text-slate">Phone:</span> <span className="num">{client.phone ?? "—"}</span></p>
+        <p><span className="text-slate">WhatsApp:</span> <span className="num">{client.whatsapp_phone ?? "—"}</span></p>
+        <p><span className="text-slate">Email:</span> {client.email ?? "—"}</p>
+        <p><span className="text-slate">Immigration doc:</span> {client.immigration_doc_type ?? "—"}</p>
         <p className="sm:col-span-2">
-          <span className="text-slate-500">Address:</span>{" "}
+          <span className="text-slate">Address:</span>{" "}
           {[household.address_street, household.address_city, household.address_state, household.address_zip]
             .filter(Boolean)
             .join(", ") || "—"}
         </p>
         {client.notes_summary && (
-          <p className="sm:col-span-2"><span className="text-slate-500">Summary:</span> {client.notes_summary}</p>
+          <p className="sm:col-span-2"><span className="text-slate">Summary:</span> {client.notes_summary}</p>
         )}
       </div>
 
       <section className="mt-8">
         <h2 className="text-lg font-semibold">{t.policies}</h2>
-        <div className="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500">
+            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
               <tr>
                 <th className="px-4 py-2">Year</th>
                 <th className="px-4 py-2">Carrier</th>
                 <th className="px-4 py-2">Plan</th>
                 <th className="px-4 py-2">Policy #</th>
-                <th className="px-4 py-2">Premium</th>
-                <th className="px-4 py-2">Subsidy</th>
-                <th className="px-4 py-2">Net</th>
+                <th className="px-4 py-2 text-right">Premium</th>
+                <th className="px-4 py-2 text-right">Subsidy</th>
+                <th className="px-4 py-2 text-right">Net</th>
                 <th className="px-4 py-2">Status</th>
               </tr>
             </thead>
@@ -130,10 +130,10 @@ export default async function ClientDetailPage({
                   <td className="px-4 py-2">{p.plan_year}</td>
                   <td className="px-4 py-2">{(p.carriers as unknown as { name: string } | null)?.name ?? "—"}</td>
                   <td className="px-4 py-2">{p.plan_name ?? p.plan_type}</td>
-                  <td className="px-4 py-2">{p.policy_number ?? "—"}</td>
-                  <td className="px-4 py-2">{p.monthly_premium != null ? `$${p.monthly_premium}` : "—"}</td>
-                  <td className="px-4 py-2">{p.subsidy_amount != null ? `$${p.subsidy_amount}` : "—"}</td>
-                  <td className="px-4 py-2">{p.net_premium != null ? `$${p.net_premium}` : "—"}</td>
+                  <td className="num px-4 py-2">{p.policy_number ?? "—"}</td>
+                  <td className="num px-4 py-2 text-right">{p.monthly_premium != null ? `$${p.monthly_premium}` : "—"}</td>
+                  <td className="num px-4 py-2 text-right">{p.subsidy_amount != null ? `$${p.subsidy_amount}` : "—"}</td>
+                  <td className="num px-4 py-2 text-right">{p.net_premium != null ? `$${p.net_premium}` : "—"}</td>
                   <td className="px-4 py-2">{STATUS_BADGE(p.status)}</td>
                 </tr>
               ))}
@@ -150,7 +150,7 @@ export default async function ClientDetailPage({
           <h2 className="text-lg font-semibold">{t.notes}</h2>
           <form action={addNoteAction} className="mt-3 flex gap-2">
             <input name="body" placeholder={t.addNote} required className={input} />
-            <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+            <button className="rounded-md bg-sapphire px-4 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
               +
             </button>
           </form>
@@ -181,7 +181,7 @@ export default async function ClientDetailPage({
                 <option key={d} value={d}>{d.replace(/_/g, " ")}</option>
               ))}
             </select>
-            <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+            <button className="rounded-md bg-sapphire px-4 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
               {t.upload}
             </button>
           </form>
@@ -189,7 +189,7 @@ export default async function ClientDetailPage({
             {(documents ?? []).map((d) => (
               <li key={d.id} className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3 text-sm">
                 <span>
-                  <a href={`/api/documents/${d.id}/download`} className="font-medium text-blue-700 hover:underline">
+                  <a href={`/api/documents/${d.id}/download`} className="font-medium text-sapphire hover:underline">
                     {d.file_name}
                   </a>
                   <span className="ml-2 text-xs text-slate-400">

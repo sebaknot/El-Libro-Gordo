@@ -18,7 +18,7 @@ export default async function DonePage({
       <div className="py-6 text-center">
         <p className="text-4xl">🎉</p>
         <h1 className="mt-3 text-xl font-bold">{t.doneTitle}</h1>
-        <p className="mt-2 text-sm text-slate-600">{t.doneBody}</p>
+        <p className="mt-2 text-sm text-slate">{t.doneBody}</p>
       </div>
     </Shell>
   );

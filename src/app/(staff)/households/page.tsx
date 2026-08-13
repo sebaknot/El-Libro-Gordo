@@ -18,39 +18,39 @@ export default async function HouseholdsPage() {
         <h1 className="text-2xl font-bold">{t.households}</h1>
         <Link
           href="/households/new"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+          className="rounded-md bg-sapphire px-4 py-2 text-sm font-semibold text-white hover:bg-sapphire/90"
         >
           + {t.newHousehold}
         </Link>
       </div>
 
-      <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="mt-4 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500">
+          <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
             <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Location</th>
-              <th className="px-4 py-3">{t.members}</th>
-              <th className="px-4 py-3">Income</th>
-              <th className="px-4 py-3">Lang</th>
+              <th className="px-4 py-2.5">Name</th>
+              <th className="px-4 py-2.5">Location</th>
+              <th className="px-4 py-2.5">{t.members}</th>
+              <th className="px-4 py-2.5 text-right">Income</th>
+              <th className="px-4 py-2.5">Lang</th>
             </tr>
           </thead>
           <tbody>
             {(households ?? []).map((h) => (
               <tr key={h.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                <td className="px-4 py-3">
-                  <Link href={`/households/${h.id}`} className="font-medium text-blue-700 hover:underline">
+                <td className="px-4 py-2.5">
+                  <Link href={`/households/${h.id}`} className="font-medium text-sapphire hover:underline">
                     {h.household_name}
                   </Link>
                 </td>
-                <td className="px-4 py-3 text-slate-600">
+                <td className="px-4 py-2.5 text-slate">
                   {[h.address_city, h.address_state].filter(Boolean).join(", ")}
                 </td>
-                <td className="px-4 py-3 text-slate-600">{(h.clients as unknown as { id: string }[])?.length ?? 0}</td>
-                <td className="px-4 py-3 text-slate-600">
+                <td className="px-4 py-2.5 text-slate">{(h.clients as unknown as { id: string }[])?.length ?? 0}</td>
+                <td className="num px-4 py-2.5 text-right text-slate">
                   {h.annual_income != null ? `$${Number(h.annual_income).toLocaleString()}` : "—"}
                 </td>
-                <td className="px-4 py-3 text-slate-600">{h.preferred_language}</td>
+                <td className="px-4 py-2.5 text-slate">{h.preferred_language}</td>
               </tr>
             ))}
             {(!households || households.length === 0) && (

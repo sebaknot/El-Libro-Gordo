@@ -18,7 +18,7 @@ function Toggle({ lang }: { lang: "es" | "en" }) {
   return (
     <button
       onClick={toggle}
-      className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-600"
+      className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate"
     >
       🌐 {V_DICT[lang].langToggle}
     </button>

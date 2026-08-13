@@ -46,21 +46,21 @@ export default async function DobGatePage({
   return (
     <Shell lang={lang}>
       <h1 className="text-xl font-bold">{t.title}</h1>
-      <p className="mt-3 text-sm text-slate-600">{t.dobPrompt}</p>
+      <p className="mt-3 text-sm text-slate">{t.dobPrompt}</p>
       {error === "wrong" && (
-        <p className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-700">{t.wrongDob}</p>
+        <p className="mt-3 rounded-md bg-brick/5 p-3 text-sm text-brick">{t.wrongDob}</p>
       )}
       <form action={action} className="mt-5 space-y-4">
         <div>
           <label htmlFor="dob" className="block text-sm font-medium">{t.dobLabel}</label>
           <input
             id="dob" name="dob" type="date" required
-            className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-3 text-base focus:border-blue-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-base focus:border-sapphire focus:outline-none"
           />
         </div>
         <button
           type="submit"
-          className="w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white hover:bg-blue-700"
+          className="w-full rounded-lg bg-sapphire px-4 py-2.5 text-base font-semibold text-white hover:bg-sapphire/90"
         >
           {t.continue}
         </button>

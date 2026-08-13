@@ -35,11 +35,11 @@ export default async function ReviewsPage() {
             <li key={r.id}>
               <Link
                 href={`/reviews/${r.id}`}
-                className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:border-blue-300"
+                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5 shadow-sm hover:border-sapphire/40"
               >
                 <span>
                   <span className="font-medium">{household?.household_name ?? "—"}</span>
-                  <span className="ml-2 text-sm text-slate-500">
+                  <span className="ml-2 text-sm text-slate">
                     {r.confirmed_no_changes
                       ? "✅ confirmed — no changes"
                       : `✏️ changes: ${changeKeys.join(", ") || "—"}`}
@@ -53,7 +53,7 @@ export default async function ReviewsPage() {
           );
         })}
         {(!pending || pending.length === 0) && (
-          <li className="rounded-xl border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
+          <li className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
             Queue is empty. 🎉
           </li>
         )}
@@ -61,8 +61,8 @@ export default async function ReviewsPage() {
 
       {(recent?.length ?? 0) > 0 && (
         <>
-          <h2 className="mt-8 text-lg font-semibold text-slate-500">Recently reviewed</h2>
-          <ul className="mt-3 space-y-1 text-sm text-slate-500">
+          <h2 className="mt-8 text-lg font-semibold text-slate">Recently reviewed</h2>
+          <ul className="mt-3 space-y-1 text-sm text-slate">
             {(recent ?? []).map((r) => (
               <li key={r.id} className="flex justify-between rounded-lg bg-white px-4 py-2">
                 <span>

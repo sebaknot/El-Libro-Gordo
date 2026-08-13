@@ -41,9 +41,9 @@ export default async function DashboardPage() {
           <Link
             key={s.label}
             href={s.href}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-blue-300"
+            className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:border-sapphire/40"
           >
-            <p className="text-sm text-slate-500">{s.label}</p>
+            <p className="text-sm text-slate">{s.label}</p>
             <p className="mt-1 text-3xl font-bold">{s.value}</p>
           </Link>
         ))}
@@ -56,7 +56,7 @@ export default async function DashboardPage() {
             {cleanup.data.map((task) => (
               <li
                 key={task.id}
-                className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm"
+                className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm"
               >
                 <Link
                   href={task.client_id ? `/clients/${task.client_id}` : "/tasks"}
@@ -64,7 +64,7 @@ export default async function DashboardPage() {
                 >
                   {task.title}
                 </Link>
-                {task.detail && <p className="text-slate-600">{task.detail}</p>}
+                {task.detail && <p className="text-slate">{task.detail}</p>}
               </li>
             ))}
           </ul>

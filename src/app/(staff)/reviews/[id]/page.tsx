@@ -55,23 +55,23 @@ export default async function ReviewDetailPage({
         <Link href="/reviews" className="hover:underline">← Reviews</Link>
       </p>
       <h1 className="mt-1 text-2xl font-bold">
-        <Link href={`/households/${household.id}`} className="text-blue-700 hover:underline">
+        <Link href={`/households/${household.id}`} className="text-sapphire hover:underline">
           {household.household_name}
         </Link>
       </h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-slate">
         Submitted {new Date(response.submitted_at).toLocaleString()} · IP {response.client_ip ?? "—"}
         {response.reviewed && " · already reviewed"}
       </p>
 
       {response.confirmed_no_changes ? (
-        <p className="mt-6 rounded-xl border border-green-200 bg-green-50 p-4 text-green-800">
+        <p className="mt-6 rounded-lg border border-sage/30 bg-sage/10 p-4 text-sage">
           ✅ Client confirmed everything is the same.
         </p>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate-500">
+            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
               <tr>
                 <th className="px-4 py-2 w-32">Field</th>
                 <th className="px-4 py-2">On file</th>
@@ -108,7 +108,7 @@ export default async function ReviewDetailPage({
         </div>
       )}
 
-      <details className="mt-4 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-500">
+      <details className="mt-4 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate">
         <summary className="cursor-pointer font-medium">Consent record</summary>
         <p className="mt-2">{response.consent_text_shown}</p>
         <p className="mt-1">Checked: {response.consent_checked ? "yes" : "no"} · UA: {response.user_agent ?? "—"}</p>
@@ -117,13 +117,13 @@ export default async function ReviewDetailPage({
       {!response.reviewed && (
         <div className="mt-6 flex gap-3">
           <form action={approveResponse.bind(null, response.id)}>
-            <button className="rounded-md bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700">
+            <button className="rounded-md bg-sapphire px-5 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
               {response.confirmed_no_changes ? "Mark reviewed" : "Approve & apply changes"}
             </button>
           </form>
           {!response.confirmed_no_changes && (
             <form action={markReviewed.bind(null, response.id)}>
-              <button className="rounded-md border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">
+              <button className="rounded-md border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate hover:bg-slate-50">
                 Mark reviewed without applying
               </button>
             </form>
@@ -138,8 +138,8 @@ function DiffRow({ label, oldValue, newValue }: { label: string; oldValue: strin
   return (
     <tr className="border-b border-slate-100 last:border-0">
       <td className="px-4 py-2 font-medium">{label}</td>
-      <td className="px-4 py-2 text-slate-500">{oldValue}</td>
-      <td className="px-4 py-2 font-medium text-blue-800">{newValue}</td>
+      <td className="px-4 py-2 text-slate">{oldValue}</td>
+      <td className="px-4 py-2 font-medium text-sapphire">{newValue}</td>
     </tr>
   );
 }

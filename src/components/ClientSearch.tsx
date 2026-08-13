@@ -51,7 +51,7 @@ export default function ClientSearch({ placeholder }: { placeholder: string }) {
         onChange={(e) => setQ(e.target.value)}
         placeholder={placeholder}
         autoFocus
-        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm shadow-sm focus:border-blue-500 focus:outline-none"
+        className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm shadow-sm focus:border-sapphire focus:outline-none"
       />
       {loading && (
         <span className="absolute right-4 top-3.5 text-xs text-slate-400">…</span>
@@ -59,19 +59,19 @@ export default function ClientSearch({ placeholder }: { placeholder: string }) {
       {results !== null && (
         <div className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
           {results.length === 0 && (
-            <p className="px-4 py-3 text-sm text-slate-400">No matches</p>
+            <p className="px-4 py-2.5 text-sm text-slate-400">No matches</p>
           )}
           {results.map((r) => (
             <Link
               key={r.id}
               href={`/clients/${r.id}`}
-              className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5 text-sm last:border-0 hover:bg-blue-50"
+              className="flex items-center justify-between border-b border-slate-100 px-4 py-2.5 text-sm last:border-0 hover:bg-sapphire/5"
             >
               <span>
                 <span className="font-medium">
                   {r.last_name}, {r.first_name}
                 </span>{" "}
-                <span className="text-slate-500">· {r.household_name}</span>
+                <span className="text-slate">· {r.household_name}</span>
               </span>
               <span className="text-xs text-slate-400">{r.phone ?? r.email ?? ""}</span>
             </Link>

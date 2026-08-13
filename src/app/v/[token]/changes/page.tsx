@@ -10,7 +10,7 @@ import Shell from "../Shell";
 export const dynamic = "force-dynamic";
 
 const input =
-  "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base focus:border-blue-500 focus:outline-none";
+  "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base focus:border-sapphire focus:outline-none";
 
 export default async function ChangesPage({
   params,
@@ -48,10 +48,10 @@ export default async function ChangesPage({
   return (
     <Shell lang={lang}>
       <h1 className="text-xl font-bold">{t.changesTitle}</h1>
-      <p className="mt-2 text-sm text-slate-600">{t.changesIntro}</p>
+      <p className="mt-2 text-sm text-slate">{t.changesIntro}</p>
 
       {error === "consent" && (
-        <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
+        <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">
           {lang === "es" ? "Debe aceptar el consentimiento para continuar." : "You must accept the consent to continue."}
         </p>
       )}
@@ -113,7 +113,7 @@ export default async function ChangesPage({
           <input name="income_proof" type="file" accept="image/*,.pdf" className="mt-1 w-full text-sm" />
         </div>
 
-        <label className="flex items-start gap-2 text-xs text-slate-600">
+        <label className="flex items-start gap-2 text-xs text-slate">
           <input type="checkbox" name="consent" required className="mt-0.5" />
           <span>
             <span className="font-medium">{t.consentLabel}</span> {CONSENT_TEXT[lang]}
@@ -122,7 +122,7 @@ export default async function ChangesPage({
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white hover:bg-blue-700"
+          className="w-full rounded-lg bg-sapphire px-4 py-2.5 text-base font-semibold text-white hover:bg-sapphire/90"
         >
           {t.submit}
         </button>

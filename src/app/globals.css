@@ -1,5 +1,66 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   El Libro Gordo design tokens.
+   Reference these through Tailwind utilities (bg-ink, text-sapphire, ...);
+   never hardcode the hex values in components.
+--------------------------------------------------------------------------- */
+@theme {
+  --color-ink: #14181c; /* sidebar background, primary headers */
+  --color-sapphire: #1e3a5f; /* primary buttons, links, focus rings, active nav */
+  --color-sage: #6b8f71; /* success/active badges only */
+  --color-paper: #fbfaf7; /* page background - not pure white */
+  --color-slate: #5b6470; /* secondary/muted text */
+  --color-brick: #b3462c; /* error states only */
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-paper font-sans text-ink antialiased;
+}
+
+/* Serif is reserved for page titles and the logotype. */
+h1,
+h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Numeric data: SSNs, phones, dollar amounts, policy numbers. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95em;
+}
+
+/* Visible keyboard focus everywhere, in the house blue. */
+:focus-visible {
+  outline: 2px solid var(--color-sapphire);
+  outline-offset: 2px;
+}
+
+/* Calm by default: only hover/focus transitions, and none at all for
+   users who ask for reduced motion. */
+a,
+button,
+input,
+select,
+textarea {
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }

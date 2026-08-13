@@ -47,9 +47,9 @@ export default function HouseholdPicker({ placeholder }: { placeholder: string }
       ))}
       <div className="flex flex-wrap gap-1.5">
         {picked.map((p) => (
-          <span key={p.id} className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+          <span key={p.id} className="inline-flex items-center gap-1 rounded-full bg-sapphire/10 px-3 py-1 text-xs font-medium text-sapphire">
             {p.name}
-            <button type="button" onClick={() => setPicked(picked.filter((x) => x.id !== p.id))} className="text-blue-500 hover:text-blue-900">
+            <button type="button" onClick={() => setPicked(picked.filter((x) => x.id !== p.id))} className="text-sapphire/70 hover:text-sapphire">
               ×
             </button>
           </span>
@@ -60,7 +60,7 @@ export default function HouseholdPicker({ placeholder }: { placeholder: string }
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={placeholder}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sapphire focus:outline-none"
         />
         {results.length > 0 && (
           <div className="absolute z-10 mt-1 w-full overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
@@ -69,10 +69,10 @@ export default function HouseholdPicker({ placeholder }: { placeholder: string }
                 key={r.id}
                 type="button"
                 onClick={() => add(r)}
-                className="block w-full border-b border-slate-100 px-4 py-2 text-left text-sm last:border-0 hover:bg-blue-50"
+                className="block w-full border-b border-slate-100 px-4 py-2 text-left text-sm last:border-0 hover:bg-sapphire/5"
               >
                 <span className="font-medium">{r.household_name}</span>{" "}
-                <span className="text-slate-500">
+                <span className="text-slate">
                   · {r.last_name}, {r.first_name}
                 </span>
               </button>

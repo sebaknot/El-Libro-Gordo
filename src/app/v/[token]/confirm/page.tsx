@@ -73,7 +73,7 @@ export default async function ConfirmPage({
   return (
     <Shell lang={lang}>
       <h1 className="text-xl font-bold">{t.confirmTitle}</h1>
-      <p className="mt-2 text-sm text-slate-600">{t.confirmIntro}</p>
+      <p className="mt-2 text-sm text-slate">{t.confirmIntro}</p>
 
       <dl className="mt-5 space-y-3 text-sm">
         <Row label={t.name} value={primary ? maskMemberName(primary.first_name, primary.last_name) : "—"} />
@@ -94,13 +94,13 @@ export default async function ConfirmPage({
       </dl>
 
       {error === "consent" && (
-        <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
+        <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">
           {lang === "es" ? "Debe aceptar el consentimiento para continuar." : "You must accept the consent to continue."}
         </p>
       )}
 
       <form action={noChanges} className="mt-6 space-y-4">
-        <label className="flex items-start gap-2 text-xs text-slate-600">
+        <label className="flex items-start gap-2 text-xs text-slate">
           <input type="checkbox" name="consent" required className="mt-0.5" />
           <span>
             <span className="font-medium">{t.consentLabel}</span> {CONSENT_TEXT[lang]}
@@ -108,7 +108,7 @@ export default async function ConfirmPage({
         </label>
         <button
           type="submit"
-          className="w-full rounded-lg bg-green-600 px-4 py-3 text-base font-semibold text-white hover:bg-green-700"
+          className="w-full rounded-lg bg-sapphire px-4 py-2.5 text-base font-semibold text-white hover:bg-sapphire/90"
         >
           {t.allSame}
         </button>
@@ -116,7 +116,7 @@ export default async function ConfirmPage({
 
       <Link
         href={`/v/${token}/changes?lang=${lang}`}
-        className="mt-3 block w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-center text-base font-semibold text-slate-700 hover:bg-slate-50"
+        className="mt-3 block w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-center text-base font-semibold text-slate-700 hover:bg-slate-50"
       >
         {t.somethingChanged}
       </Link>

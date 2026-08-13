@@ -16,7 +16,7 @@ type ClientValues = {
 };
 
 const input =
-  "mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none";
+  "mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sapphire focus:outline-none";
 
 export default function ClientForm({
   action,
@@ -33,7 +33,7 @@ export default function ClientForm({
 }) {
   return (
     <form action={action} className="max-w-2xl space-y-4">
-      {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+      {error && <p className="rounded-md bg-brick/5 p-3 text-sm text-brick">{error}</p>}
 
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -117,7 +117,7 @@ export default function ClientForm({
 
       <button
         type="submit"
-        className="rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+        className="rounded-md bg-sapphire px-5 py-2 text-sm font-semibold text-white hover:bg-sapphire/90"
       >
         {submitLabel}
       </button>

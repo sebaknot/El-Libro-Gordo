@@ -47,13 +47,13 @@ export default function VerifyForm() {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
-      <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+      <div className="w-full max-w-sm rounded-lg border border-slate-200 border-t-4 border-t-ink bg-white p-8 shadow-sm">
         <h1 className="text-xl font-bold">Two-factor code</h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-slate">
           Enter the 6-digit code from your authenticator app.
         </p>
 
-        {error && <p className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+        {error && <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">{error}</p>}
 
         <form onSubmit={verify} className="mt-6 flex gap-2">
           <input
@@ -65,12 +65,12 @@ export default function VerifyForm() {
             placeholder="123456"
             autoFocus
             required
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-center text-lg tracking-widest focus:border-blue-500 focus:outline-none"
+            className="num w-full rounded-md border border-slate-300 px-3 py-2 text-center text-lg tracking-widest focus:border-sapphire focus:outline-none"
           />
           <button
             type="submit"
             disabled={busy}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            className="rounded-md bg-sapphire px-4 py-2 text-sm font-semibold text-white hover:bg-sapphire/90 disabled:opacity-50"
           >
             {busy ? "…" : "Verify"}
           </button>
