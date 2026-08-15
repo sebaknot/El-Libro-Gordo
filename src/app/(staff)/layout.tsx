@@ -15,6 +15,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     { href: "/links", label: t.links },
     { href: "/messages", label: t.messages },
     { href: "/reviews", label: t.reviews },
+    { href: "/commissions", label: t.commissions },
     { href: "/tasks", label: t.tasks },
     { href: "/export", label: t.export },
   ];

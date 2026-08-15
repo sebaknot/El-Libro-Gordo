@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
-const PUBLIC_PATHS = ["/login", "/auth", "/v", "/privacy", "/terms"];
+const PUBLIC_PATHS = ["/login", "/auth", "/v", "/privacy", "/terms", "/api/cron"];
 
 /** Returns a description of the config problem, or null if config is usable. */
 function configProblem(): string | null {

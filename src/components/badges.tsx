@@ -7,6 +7,9 @@
 const COLORS: Record<string, string> = {
   active: "bg-sage/15 text-sage",
   done: "bg-sage/15 text-sage",
+  paid: "bg-sage/15 text-sage",
+  underpaid: "bg-amber-600/15 text-amber-700",
+  missing: "bg-brick/10 text-brick",
   pending: "bg-amber-600/15 text-amber-700",
   delinquent: "bg-amber-600/15 text-amber-700",
   medicare_transition: "bg-sapphire/10 text-sapphire",

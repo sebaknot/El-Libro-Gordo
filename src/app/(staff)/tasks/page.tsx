@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/auth";
 import { getDict } from "@/lib/i18n";
 import { STATUS_BADGE } from "@/components/badges";
-import { setTaskStatus } from "./actions";
+import { setTaskStatus, runAutoTasksNow } from "./actions";
 
-export default async function TasksPage() {
+export default async function TasksPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ generated?: string }>;
+}) {
+  const staff = await requireStaff();
+  const { generated } = await searchParams;
   const supabase = await createClient();
   const { t } = await getDict();
 
@@ -18,7 +25,22 @@ export default async function TasksPage() {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold">{t.tasks}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{t.tasks}</h1>
+        {staff.role === "owner" && (
+          <form action={runAutoTasksNow}>
+            <button className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate hover:bg-slate-50">
+              ⟳ Run checks now
+            </button>
+          </form>
+        )}
+      </div>
+
+      {generated != null && (
+        <p className="mt-4 rounded-md bg-sage/10 p-3 text-sm text-sage">
+          Checks complete — {generated} new task{generated === "1" ? "" : "s"} created.
+        </p>
+      )}
 
       <ul className="mt-6 space-y-2">
         {(tasks ?? []).map((task) => (
