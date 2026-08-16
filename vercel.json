@@ -1,5 +1,6 @@
 {
   "crons": [
-    { "path": "/api/cron/generate-tasks", "schedule": "0 8 * * *" }
+    { "path": "/api/cron/generate-tasks", "schedule": "0 8 * * *" },
+    { "path": "/api/cron/pipeline-automation", "schedule": "0 9 * * *" }
   ]
 }
