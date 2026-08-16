@@ -41,13 +41,23 @@ export async function addCommissionRate(formData: FormData) {
   redirect("/commissions/rates");
 }
 
+export type CommissionGroup = {
+  householdId: string;
+  carrierId: string | null;
+  planType: string;
+  planYear: number;
+};
+
 /**
- * Records a month's commission for a policy. expected_amount is derived from
- * the matching commission_rates row (carrier + plan type + plan year) times
- * the household size (1 when unset); status follows from received vs expected.
+ * Records a month's commission for a whole household/carrier/plan-type/plan-year
+ * group at once. The single received amount is split evenly across the group's
+ * active policies in integer cents (any leftover cent lands on the first policy
+ * sorted by id), one commission_payments row per policy. expected_amount on each
+ * row is the per-member rate from the matching commission_rates row; status is
+ * derived per row from its share vs that rate.
  */
 export async function recordCommissionPayment(
-  policyId: string,
+  group: CommissionGroup,
   periodMonth: string,
   receivedAmount: number | null
 ) {
@@ -58,73 +68,108 @@ export async function recordCommissionPayment(
   const period = periodMonth.length === 7 ? `${periodMonth}-01` : periodMonth;
 
   const supabase = await createClient();
-  const { data: policy } = await supabase
+  let policiesQuery = supabase
     .from("policies")
-    .select("id, carrier_id, plan_type, plan_year, households(household_size)")
-    .eq("id", policyId)
-    .single();
-  if (!policy) redirect("/commissions?error=Policy+not+found");
+    .select("id")
+    .eq("household_id", group.householdId)
+    .eq("plan_type", group.planType)
+    .eq("plan_year", group.planYear)
+    .eq("status", "active")
+    .order("id");
+  policiesQuery = group.carrierId
+    ? policiesQuery.eq("carrier_id", group.carrierId)
+    : policiesQuery.is("carrier_id", null);
+  const { data: policies } = await policiesQuery;
+  if (!policies || policies.length === 0) {
+    redirect("/commissions?error=No+active+policies+found+for+that+group");
+  }
 
-  let expected: number | null = null;
-  if (policy.carrier_id) {
+  // Per-member expected: the matching rate row (rates themselves never change).
+  let expectedPerMember: number | null = null;
+  if (group.carrierId) {
     const { data: rate } = await supabase
       .from("commission_rates")
       .select("rate_per_member_month")
-      .eq("carrier_id", policy.carrier_id)
-      .eq("plan_type", policy.plan_type)
-      .eq("plan_year", policy.plan_year)
+      .eq("carrier_id", group.carrierId)
+      .eq("plan_type", group.planType)
+      .eq("plan_year", group.planYear)
       .maybeSingle();
-    if (rate) {
-      const size =
-        (policy.households as unknown as { household_size: number | null } | null)
-          ?.household_size ?? 1;
-      expected = Number(rate.rate_per_member_month) * (size || 1);
-    }
+    if (rate) expectedPerMember = Number(rate.rate_per_member_month);
   }
 
-  const received = receivedAmount != null && Number.isFinite(receivedAmount) ? receivedAmount : null;
+  const received =
+    receivedAmount != null && Number.isFinite(receivedAmount) && receivedAmount >= 0
+      ? receivedAmount
+      : null;
+
+  // Even split in integer cents; remainder cents go to the first policy.
+  const n = policies!.length;
+  let shares: (number | null)[];
+  if (received == null) {
+    shares = policies!.map(() => null);
+  } else {
+    const totalCents = Math.round(received * 100);
+    const base = Math.floor(totalCents / n);
+    const remainder = totalCents - base * n;
+    shares = policies!.map((_, i) => (base + (i === 0 ? remainder : 0)) / 100);
+  }
+
   const monthStart = new Date();
   monthStart.setUTCDate(1);
-  const periodPassed = new Date(`${period}T00:00:00Z`) < new Date(monthStart.toISOString().slice(0, 10));
+  const periodPassed =
+    new Date(`${period}T00:00:00Z`) < new Date(monthStart.toISOString().slice(0, 10));
 
-  let status: "pending" | "paid" | "underpaid" | "missing";
-  if (received != null && received > 0) {
-    status = expected == null || received >= expected ? "paid" : "underpaid";
-  } else {
-    status = periodPassed ? "missing" : "pending";
-  }
+  const rows = policies!.map((p, i) => {
+    const share = shares[i];
+    let status: "pending" | "paid" | "underpaid" | "missing";
+    if (share != null && share > 0) {
+      status = expectedPerMember == null || share >= expectedPerMember ? "paid" : "underpaid";
+    } else {
+      status = periodPassed ? "missing" : "pending";
+    }
+    return {
+      policy_id: p.id,
+      period_month: period,
+      expected_amount: expectedPerMember,
+      received_amount: share,
+      status,
+      reconciled_by: staff.id,
+    };
+  });
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("commission_payments")
-    .upsert(
-      {
-        policy_id: policyId,
-        period_month: period,
-        expected_amount: expected,
-        received_amount: received,
-        status,
-        reconciled_by: staff.id,
-      },
-      { onConflict: "policy_id,period_month" }
-    )
-    .select("id")
-    .single();
-  if (error || !data) {
-    redirect(`/commissions?error=${encodeURIComponent(error?.message ?? "save failed")}`);
+    .upsert(rows, { onConflict: "policy_id,period_month" });
+  if (error) {
+    redirect(`/commissions?error=${encodeURIComponent(error.message)}`);
   }
 
-  await logAudit("update", "commission_payment", data.id, {
-    policy_id: policyId,
+  await logAudit("update", "commission_payment", undefined, {
+    household_id: group.householdId,
+    carrier_id: group.carrierId,
+    plan_type: group.planType,
+    plan_year: group.planYear,
     period_month: period,
-    status,
+    policies: n,
+    received,
   });
   revalidatePath("/commissions");
   redirect("/commissions");
 }
 
-/** Form wrapper for the quick-add rows on the reconciliation page. */
-export async function recordCommissionPaymentForm(policyId: string, formData: FormData) {
+/** Form wrapper for the grouped quick-add rows on the reconciliation page. */
+export async function recordCommissionPaymentForm(
+  householdId: string,
+  carrierId: string | null,
+  planType: string,
+  planYear: number,
+  formData: FormData
+) {
   const period = String(formData.get("period_month") ?? "");
   const raw = String(formData.get("received_amount") ?? "").trim();
-  await recordCommissionPayment(policyId, period, raw === "" ? null : Number(raw));
+  await recordCommissionPayment(
+    { householdId, carrierId, planType, planYear },
+    period,
+    raw === "" ? null : Number(raw)
+  );
 }

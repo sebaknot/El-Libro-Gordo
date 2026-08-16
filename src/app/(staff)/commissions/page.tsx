@@ -7,6 +7,38 @@ import { recordCommissionPaymentForm } from "./actions";
 const input =
   "rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:border-sapphire focus:outline-none";
 
+type PolicyRow = {
+  id: string;
+  household_id: string;
+  carrier_id: string | null;
+  plan_type: string;
+  plan_year: number;
+  households: unknown;
+  carriers: unknown;
+};
+
+type UnrecordedGroup = {
+  householdId: string;
+  carrierId: string | null;
+  householdName: string;
+  carrierName: string | null;
+  planType: string;
+  planYear: number;
+  members: number;
+};
+
+type RecordedGroup = {
+  key: string;
+  period: string;
+  householdName: string;
+  carrierName: string | null;
+  planLabel: string;
+  members: number;
+  expected: number | null;
+  received: number | null;
+  status: "missing" | "underpaid" | "pending" | "paid";
+};
+
 export default async function CommissionsPage({
   searchParams,
 }: {
@@ -19,44 +51,119 @@ export default async function CommissionsPage({
 
   const currentMonth = `${new Date().toISOString().slice(0, 7)}-01`;
 
-  let paymentsQuery = supabase
-    .from("commission_payments")
-    .select(
-      "id, period_month, expected_amount, received_amount, status, policies(id, plan_name, plan_type, plan_year, policy_number, clients(first_name, last_name), carriers(name))"
-    )
-    .order("period_month", { ascending: false })
-    .limit(300);
-  if (discrepanciesOnly) paymentsQuery = paymentsQuery.in("status", ["underpaid", "missing"]);
+  const [{ data: payments }, { data: activePolicies }, { data: thisMonth }, { data: rates }] =
+    await Promise.all([
+      supabase
+        .from("commission_payments")
+        .select(
+          "id, policy_id, period_month, expected_amount, received_amount, status, policies(id, household_id, carrier_id, plan_type, plan_year, households(household_name), carriers(name))"
+        )
+        .order("period_month", { ascending: false })
+        .limit(1000),
+      supabase
+        .from("policies")
+        .select(
+          "id, household_id, carrier_id, plan_type, plan_year, households(household_name), carriers(name)"
+        )
+        .eq("status", "active")
+        .limit(1000),
+      supabase.from("commission_payments").select("policy_id").eq("period_month", currentMonth),
+      supabase.from("commission_rates").select("carrier_id, plan_type, plan_year, rate_per_member_month"),
+    ]);
 
-  const [{ data: payments }, { data: activePolicies }, { data: thisMonth }] = await Promise.all([
-    paymentsQuery,
-    supabase
-      .from("policies")
-      .select("id, plan_name, plan_type, plan_year, policy_number, clients(first_name, last_name), carriers(name)")
-      .eq("status", "active")
-      .limit(300),
-    supabase.from("commission_payments").select("policy_id").eq("period_month", currentMonth),
-  ]);
+  const rateFor = new Map<string, number>();
+  for (const r of rates ?? []) {
+    rateFor.set(`${r.carrier_id}|${r.plan_type}|${r.plan_year}`, Number(r.rate_per_member_month));
+  }
+  const name = (p: { households: unknown; carriers: unknown }) => ({
+    household:
+      (p.households as { household_name: string } | null)?.household_name ?? "Unknown household",
+    carrier: (p.carriers as { name: string } | null)?.name ?? null,
+  });
 
-  const recorded = new Set((thisMonth ?? []).map((p) => p.policy_id));
-  const unrecorded = (activePolicies ?? []).filter((p) => !recorded.has(p.id));
+  // ---- "Not yet recorded": active policies with no row for the current month,
+  // grouped by household + carrier + plan type + plan year.
+  const recordedIds = new Set((thisMonth ?? []).map((p) => p.policy_id));
+  const unrecordedGroups = new Map<string, UnrecordedGroup>();
+  for (const p of (activePolicies ?? []) as PolicyRow[]) {
+    if (recordedIds.has(p.id)) continue;
+    const key = `${p.household_id}|${p.carrier_id}|${p.plan_type}|${p.plan_year}`;
+    const existing = unrecordedGroups.get(key);
+    if (existing) {
+      existing.members++;
+    } else {
+      const n = name(p);
+      unrecordedGroups.set(key, {
+        householdId: p.household_id,
+        carrierId: p.carrier_id,
+        householdName: n.household,
+        carrierName: n.carrier,
+        planType: p.plan_type,
+        planYear: p.plan_year,
+        members: 1,
+      });
+    }
+  }
+  const unrecorded = [...unrecordedGroups.values()].sort((a, b) =>
+    a.householdName.localeCompare(b.householdName)
+  );
 
-  const policyLabel = (p: {
-    plan_name: string | null;
-    plan_type: string;
-    plan_year: number;
-    policy_number: string | null;
-    clients: unknown;
-    carriers: unknown;
-  }) => {
-    const client = p.clients as { first_name: string; last_name: string } | null;
-    const carrier = (p.carriers as { name: string } | null)?.name;
-    return {
-      client: client ? `${client.last_name}, ${client.first_name}` : "—",
-      plan: [carrier, p.plan_name ?? p.plan_type, p.plan_year].filter(Boolean).join(" · "),
-      policyNumber: p.policy_number,
-    };
-  };
+  // ---- Recorded payments, grouped by household + carrier + period month.
+  const recordedGroups = new Map<
+    string,
+    RecordedGroup & { anyMissing: boolean; anyUnderpaid: boolean; anyPending: boolean }
+  >();
+  for (const cp of payments ?? []) {
+    const policy = cp.policies as unknown as PolicyRow | null;
+    if (!policy) continue;
+    const period = String(cp.period_month);
+    const key = `${policy.household_id}|${policy.carrier_id}|${period}`;
+    let group = recordedGroups.get(key);
+    if (!group) {
+      const n = name(policy);
+      group = {
+        key,
+        period,
+        householdName: n.household,
+        carrierName: n.carrier,
+        planLabel: `${policy.plan_type} ${policy.plan_year}`,
+        members: 0,
+        expected: null,
+        received: null,
+        status: "paid",
+        anyMissing: false,
+        anyUnderpaid: false,
+        anyPending: false,
+      };
+      recordedGroups.set(key, group);
+    }
+    group.members++;
+    if (cp.expected_amount != null) {
+      group.expected = (group.expected ?? 0) + Number(cp.expected_amount);
+    }
+    if (cp.received_amount != null) {
+      group.received = (group.received ?? 0) + Number(cp.received_amount);
+    }
+    if (cp.status === "missing") group.anyMissing = true;
+    if (cp.status === "underpaid") group.anyUnderpaid = true;
+    if (cp.status === "pending") group.anyPending = true;
+  }
+  let recorded = [...recordedGroups.values()].map((g) => ({
+    ...g,
+    status: g.anyMissing
+      ? ("missing" as const)
+      : g.anyUnderpaid
+        ? ("underpaid" as const)
+        : g.anyPending
+          ? ("pending" as const)
+          : ("paid" as const),
+  }));
+  if (discrepanciesOnly) {
+    recorded = recorded.filter((g) => g.status === "missing" || g.status === "underpaid");
+  }
+  recorded.sort(
+    (a, b) => b.period.localeCompare(a.period) || a.householdName.localeCompare(b.householdName)
+  );
 
   return (
     <div className="max-w-4xl">
@@ -87,30 +194,49 @@ export default async function CommissionsPage({
             Not yet recorded for {currentMonth.slice(0, 7)}
           </h2>
           <p className="mt-1 text-sm text-slate">
-            Expected amounts are calculated from the carrier&apos;s rate for the plan year ×
-            household size when you record the payment.
+            One entry per household &amp; plan — the amount you enter is split evenly across
+            the household&apos;s policies behind the scenes.
           </p>
           <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
             <table className="w-full text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
                 <tr>
-                  <th className="px-4 py-2">Client</th>
-                  <th className="px-4 py-2">Plan</th>
-                  <th className="px-4 py-2">Period</th>
+                  <th className="px-4 py-2">Household</th>
+                  <th className="px-4 py-2">Carrier · plan</th>
+                  <th className="px-4 py-2 text-right">Members</th>
+                  <th className="px-4 py-2 text-right">Expected</th>
                   <th className="px-4 py-2 text-right">Received $</th>
                   <th className="px-4 py-2"></th>
                 </tr>
               </thead>
               <tbody>
-                {unrecorded.map((p) => {
-                  const label = policyLabel(p);
+                {unrecorded.map((g) => {
+                  const rate = g.carrierId
+                    ? rateFor.get(`${g.carrierId}|${g.planType}|${g.planYear}`)
+                    : undefined;
+                  const expected = rate != null ? rate * g.members : null;
                   return (
-                    <tr key={p.id} className="border-b border-slate-100 last:border-0">
-                      <td className="px-4 py-2 font-medium">{label.client}</td>
-                      <td className="px-4 py-2 text-slate">{label.plan}</td>
-                      <td colSpan={3} className="px-2 py-1.5">
+                    <tr
+                      key={`${g.householdId}|${g.carrierId}|${g.planType}|${g.planYear}`}
+                      className="border-b border-slate-100 last:border-0"
+                    >
+                      <td className="px-4 py-2 font-medium">{g.householdName}</td>
+                      <td className="px-4 py-2 text-slate">
+                        {[g.carrierName ?? "no carrier", g.planType, g.planYear].join(" · ")}
+                      </td>
+                      <td className="num px-4 py-2 text-right">{g.members}</td>
+                      <td className="num px-4 py-2 text-right">
+                        {expected != null ? `$${expected.toFixed(2)}` : "—"}
+                      </td>
+                      <td colSpan={2} className="px-2 py-1.5">
                         <form
-                          action={recordCommissionPaymentForm.bind(null, p.id)}
+                          action={recordCommissionPaymentForm.bind(
+                            null,
+                            g.householdId,
+                            g.carrierId,
+                            g.planType,
+                            g.planYear
+                          )}
                           className="flex items-center justify-end gap-2"
                         >
                           <input
@@ -151,37 +277,35 @@ export default async function CommissionsPage({
             <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
               <tr>
                 <th className="px-4 py-2">Period</th>
-                <th className="px-4 py-2">Client</th>
-                <th className="px-4 py-2">Plan</th>
+                <th className="px-4 py-2">Household</th>
+                <th className="px-4 py-2">Carrier · plan</th>
+                <th className="px-4 py-2 text-right">Members</th>
                 <th className="px-4 py-2 text-right">Expected</th>
                 <th className="px-4 py-2 text-right">Received</th>
                 <th className="px-4 py-2">Status</th>
               </tr>
             </thead>
             <tbody>
-              {(payments ?? []).map((cp) => {
-                const policy = cp.policies as unknown as Parameters<typeof policyLabel>[0] | null;
-                const label = policy
-                  ? policyLabel(policy)
-                  : { client: "—", plan: "—", policyNumber: null };
-                return (
-                  <tr key={cp.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                    <td className="num px-4 py-2">{String(cp.period_month).slice(0, 7)}</td>
-                    <td className="px-4 py-2 font-medium">{label.client}</td>
-                    <td className="px-4 py-2 text-slate">{label.plan}</td>
-                    <td className="num px-4 py-2 text-right">
-                      {cp.expected_amount != null ? `$${Number(cp.expected_amount).toFixed(2)}` : "—"}
-                    </td>
-                    <td className="num px-4 py-2 text-right">
-                      {cp.received_amount != null ? `$${Number(cp.received_amount).toFixed(2)}` : "—"}
-                    </td>
-                    <td className="px-4 py-2">{STATUS_BADGE(cp.status)}</td>
-                  </tr>
-                );
-              })}
-              {(!payments || payments.length === 0) && (
+              {recorded.map((g) => (
+                <tr key={g.key} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                  <td className="num px-4 py-2">{g.period.slice(0, 7)}</td>
+                  <td className="px-4 py-2 font-medium">{g.householdName}</td>
+                  <td className="px-4 py-2 text-slate">
+                    {[g.carrierName ?? "no carrier", g.planLabel].join(" · ")}
+                  </td>
+                  <td className="num px-4 py-2 text-right">{g.members}</td>
+                  <td className="num px-4 py-2 text-right">
+                    {g.expected != null ? `$${g.expected.toFixed(2)}` : "—"}
+                  </td>
+                  <td className="num px-4 py-2 text-right">
+                    {g.received != null ? `$${g.received.toFixed(2)}` : "—"}
+                  </td>
+                  <td className="px-4 py-2">{STATUS_BADGE(g.status)}</td>
+                </tr>
+              ))}
+              {recorded.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
+                  <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
                     {discrepanciesOnly
                       ? "No discrepancies — everything reconciles."
                       : "No payments recorded yet."}
