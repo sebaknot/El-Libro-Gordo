@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Target } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
 import { requireStaff } from "@/lib/auth";
 import { getDict } from "@/lib/i18n";
 import { createCampaign } from "./actions";
@@ -80,7 +82,7 @@ export default async function CampaignsPage({
             <li key={c.id}>
               <Link
                 href={`/campaigns/${c.id}`}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:border-sapphire/40"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:border-sapphire/40 hover:shadow-md"
               >
                 <span>
                   <span className="block font-semibold">{c.name}</span>
@@ -98,8 +100,11 @@ export default async function CampaignsPage({
           );
         })}
         {(!campaigns || campaigns.length === 0) && (
-          <li className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
-            No campaigns yet — create one above to open the war room.
+          <li className="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <EmptyState
+              icon={Target}
+              message="No campaigns yet — create one above to open the war room."
+            />
           </li>
         )}
       </ul>

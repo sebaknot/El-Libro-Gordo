@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
+import SubmitButton from "@/components/SubmitButton";
 import { getDict } from "@/lib/i18n";
 import { createTemplate, deleteTemplate, updateTemplate } from "../actions";
 
@@ -76,9 +79,7 @@ export default async function TemplatesPage({
         <div className="mt-3">
           <TemplateFields />
         </div>
-        <button className="mt-3 rounded-md bg-sapphire px-5 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
-          + Create
-        </button>
+        <SubmitButton className="mt-3 px-5 py-2 text-sm">+ Create</SubmitButton>
       </form>
 
       <ul className="mt-6 space-y-4">
@@ -86,9 +87,7 @@ export default async function TemplatesPage({
           <li key={tp.id} className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <form action={updateTemplate.bind(null, tp.id)}>
               <TemplateFields defaults={tp} />
-              <button className="mt-3 rounded-md bg-sapphire px-4 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
-                {t.save}
-              </button>
+              <SubmitButton className="mt-3 px-4 py-2 text-sm">{t.save}</SubmitButton>
             </form>
             <form action={deleteTemplate.bind(null, tp.id)} className="mt-2">
               <button className="text-xs text-brick hover:underline">Delete</button>
@@ -96,9 +95,11 @@ export default async function TemplatesPage({
           </li>
         ))}
         {(!templates || templates.length === 0) && (
-          <li className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
-            No templates yet. The thread composer uses these, filtered by channel and the
-            household&apos;s language.
+          <li className="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <EmptyState
+              icon={FileText}
+              message="No templates yet. The thread composer uses these, filtered by channel and the household's language."
+            />
           </li>
         )}
       </ul>

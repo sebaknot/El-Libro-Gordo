@@ -1,5 +1,8 @@
+import { Building2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { requireStaff } from "@/lib/auth";
+import EmptyState from "@/components/EmptyState";
+import SubmitButton from "@/components/SubmitButton";
 import { getDict } from "@/lib/i18n";
 import { addCarrier, updateCarrier } from "./actions";
 
@@ -57,21 +60,19 @@ export default async function CarriersPage({
               <input name="support_phone" className={`${input} num`} />
             </div>
           </div>
-          <button className="mt-3 rounded-md bg-sapphire px-5 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
-            + Add carrier
-          </button>
+          <SubmitButton className="mt-3 px-5 py-2 text-sm">+ Add carrier</SubmitButton>
         </form>
       )}
 
       <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
+          <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate">
             <tr>
-              <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Agent ID #</th>
-              <th className="px-4 py-2">Portal</th>
-              <th className="px-4 py-2">Support phone</th>
-              {canEdit && <th className="px-4 py-2"></th>}
+              <th className="px-4 py-2.5">Name</th>
+              <th className="px-4 py-2.5">Agent ID #</th>
+              <th className="px-4 py-2.5">Portal</th>
+              <th className="px-4 py-2.5">Support phone</th>
+              {canEdit && <th className="px-4 py-2.5"></th>}
             </tr>
           </thead>
           <tbody>
@@ -79,7 +80,7 @@ export default async function CarriersPage({
               canEdit ? (
                 // Carriers stay editable (unlike commission rates): fixing a
                 // typo or a portal link is not a historical-accuracy concern.
-                <tr key={c.id} className="border-b border-slate-100 last:border-0">
+                <tr key={c.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
                   <td className="px-2 py-1.5">
                     <input name="name" required defaultValue={c.name} form={`carrier-${c.id}`} className={input} />
                   </td>
@@ -110,9 +111,9 @@ export default async function CarriersPage({
                   </td>
                   <td className="px-2 py-1.5">
                     <form id={`carrier-${c.id}`} action={updateCarrier.bind(null, c.id)}>
-                      <button className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate hover:bg-slate-50">
+                      <SubmitButton variant="secondary" className="px-3 py-1.5 text-xs">
                         {t.save}
-                      </button>
+                      </SubmitButton>
                     </form>
                   </td>
                 </tr>
@@ -140,8 +141,11 @@ export default async function CarriersPage({
             )}
             {(!carriers || carriers.length === 0) && (
               <tr>
-                <td colSpan={canEdit ? 5 : 4} className="px-4 py-8 text-center text-slate-400">
-                  No carriers yet. Add the ones you work with above.
+                <td colSpan={canEdit ? 5 : 4}>
+                  <EmptyState
+                    icon={Building2}
+                    message="No carriers yet. Add the ones you work with above."
+                  />
                 </td>
               </tr>
             )}

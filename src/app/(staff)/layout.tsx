@@ -8,19 +8,22 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   const staff = await requireStaff();
   const { t } = await getDict();
 
-  const nav = [
-    { href: "/dashboard", label: t.dashboard },
-    { href: "/clients", label: t.clients },
-    { href: "/households", label: t.households },
-    { href: "/links", label: t.links },
-    { href: "/messages", label: t.messages },
-    { href: "/reviews", label: t.reviews },
-    { href: "/campaigns", label: t.campaigns },
-    { href: "/carriers", label: t.carriers },
-    { href: "/commissions", label: t.commissions },
-    { href: "/tasks", label: t.tasks },
-    { href: "/export", label: t.export },
+  const book = [
+    { href: "/clients", label: t.clients, icon: "clients" },
+    { href: "/households", label: t.households, icon: "households" },
+    { href: "/links", label: t.links, icon: "links" },
+    { href: "/reviews", label: t.reviews, icon: "reviews" },
+    { href: "/messages", label: t.messages, icon: "messages" },
   ];
+  const operations = [
+    { href: "/campaigns", label: t.campaigns, icon: "campaigns" },
+    { href: "/carriers", label: t.carriers, icon: "carriers" },
+    { href: "/commissions", label: t.commissions, icon: "commissions" },
+    { href: "/tasks", label: t.tasks, icon: "tasks" },
+  ];
+
+  const sectionHeader =
+    "px-3 pb-1 pt-4 text-[11px] font-medium uppercase tracking-widest text-slate";
 
   return (
     <div className="flex min-h-screen">
@@ -31,10 +34,26 @@ export default async function StaffLayout({ children }: { children: React.ReactN
             {staff.full_name} · {staff.role}
           </p>
         </div>
-        <nav className="flex-1 space-y-1 p-3">
-          {nav.map((item) => (
-            <NavLink key={item.href} href={item.href} label={item.label} />
-          ))}
+        <nav className="flex-1 p-3">
+          <NavLink href="/dashboard" label={t.dashboard} icon="dashboard" />
+
+          <p className={sectionHeader}>Book</p>
+          <div className="space-y-1">
+            {book.map((item) => (
+              <NavLink key={item.href} {...item} />
+            ))}
+          </div>
+
+          <p className={`${sectionHeader} mt-2 border-t border-white/10`}>Operations</p>
+          <div className="space-y-1">
+            {operations.map((item) => (
+              <NavLink key={item.href} {...item} />
+            ))}
+          </div>
+
+          <div className="mt-3 border-t border-white/10 pt-3">
+            <NavLink href="/export" label={t.export} icon="export" />
+          </div>
         </nav>
         <div className="space-y-1 border-t border-white/10 p-3">
           <form action={toggleLocale}>

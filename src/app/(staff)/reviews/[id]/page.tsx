@@ -71,11 +71,11 @@ export default async function ReviewDetailPage({
       ) : (
         <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
+            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate">
               <tr>
                 <th className="px-4 py-2 w-32">Field</th>
-                <th className="px-4 py-2">On file</th>
-                <th className="px-4 py-2">Reported</th>
+                <th className="px-4 py-2.5">On file</th>
+                <th className="px-4 py-2.5">Reported</th>
               </tr>
             </thead>
             <tbody>
@@ -136,9 +136,9 @@ export default async function ReviewDetailPage({
 
 function DiffRow({ label, oldValue, newValue }: { label: string; oldValue: string; newValue: string }) {
   return (
-    <tr className="border-b border-slate-100 last:border-0">
+    <tr className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
       <td className="px-4 py-2 font-medium">{label}</td>
-      <td className="px-4 py-2 text-slate">{oldValue}</td>
+      <td className="px-4 py-2.5 text-slate">{oldValue}</td>
       <td className="px-4 py-2 font-medium text-sapphire">{newValue}</td>
     </tr>
   );

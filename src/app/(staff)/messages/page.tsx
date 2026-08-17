@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
 import { getDict } from "@/lib/i18n";
 
 const CHANNEL_ICON: Record<string, string> = { sms: "💬", whatsapp: "🟢", email: "✉️" };
@@ -89,7 +91,9 @@ export default async function MessagesInboxPage() {
           </li>
         ))}
         {rows.length === 0 && (
-          <li className="px-4 py-10 text-center text-sm text-slate-400">No messages yet.</li>
+          <li>
+            <EmptyState icon={MessageSquare} message="No messages yet." />
+          </li>
         )}
       </ul>
     </div>

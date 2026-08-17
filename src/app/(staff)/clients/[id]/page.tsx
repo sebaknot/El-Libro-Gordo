@@ -123,27 +123,27 @@ export default async function ClientDetailPage({
 
         <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
+            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate">
               <tr>
-                <th className="px-4 py-2">Year</th>
-                <th className="px-4 py-2">Carrier</th>
-                <th className="px-4 py-2">Plan</th>
-                <th className="px-4 py-2">Policy #</th>
-                <th className="px-4 py-2 text-right">Premium</th>
-                <th className="px-4 py-2 text-right">Subsidy</th>
-                <th className="px-4 py-2 text-right">Net</th>
-                <th className="px-4 py-2">Status</th>
-                {canManagePolicies && <th className="px-4 py-2"></th>}
+                <th className="px-4 py-2.5">Year</th>
+                <th className="px-4 py-2.5">Carrier</th>
+                <th className="px-4 py-2.5">Plan</th>
+                <th className="px-4 py-2.5">Policy #</th>
+                <th className="px-4 py-2.5 text-right">Premium</th>
+                <th className="px-4 py-2.5 text-right">Subsidy</th>
+                <th className="px-4 py-2.5 text-right">Net</th>
+                <th className="px-4 py-2.5">Status</th>
+                {canManagePolicies && <th className="px-4 py-2.5"></th>}
               </tr>
             </thead>
             <tbody>
               {(policies ?? []).map((p) =>
                 canManagePolicies && editPolicy === p.id ? (
                   <tr key={p.id} className="border-b border-slate-100 bg-sapphire/5 last:border-0">
-                    <td className="px-4 py-2">{p.plan_year}</td>
-                    <td className="px-4 py-2">{(p.carriers as unknown as { name: string } | null)?.name ?? "—"}</td>
-                    <td className="px-4 py-2">{p.plan_name ?? p.plan_type}</td>
-                    <td className="num px-4 py-2">{p.policy_number ?? "—"}</td>
+                    <td className="px-4 py-2.5">{p.plan_year}</td>
+                    <td className="px-4 py-2.5">{(p.carriers as unknown as { name: string } | null)?.name ?? "—"}</td>
+                    <td className="px-4 py-2.5">{p.plan_name ?? p.plan_type}</td>
+                    <td className="num px-4 py-2.5">{p.policy_number ?? "—"}</td>
                     <td colSpan={3} className="px-2 py-1.5">
                       <label className="flex items-center justify-end gap-1 text-xs text-slate">
                         terminated on
@@ -182,22 +182,22 @@ export default async function ClientDetailPage({
                     </td>
                   </tr>
                 ) : (
-                  <tr key={p.id} className="border-b border-slate-100 last:border-0">
-                    <td className="px-4 py-2">{p.plan_year}</td>
-                    <td className="px-4 py-2">{(p.carriers as unknown as { name: string } | null)?.name ?? "—"}</td>
-                    <td className="px-4 py-2">{p.plan_name ?? p.plan_type}</td>
-                    <td className="num px-4 py-2">{p.policy_number ?? "—"}</td>
-                    <td className="num px-4 py-2 text-right">{p.monthly_premium != null ? `$${p.monthly_premium}` : "—"}</td>
-                    <td className="num px-4 py-2 text-right">{p.subsidy_amount != null ? `$${p.subsidy_amount}` : "—"}</td>
-                    <td className="num px-4 py-2 text-right">{p.net_premium != null ? `$${p.net_premium}` : "—"}</td>
-                    <td className="px-4 py-2">
+                  <tr key={p.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                    <td className="px-4 py-2.5">{p.plan_year}</td>
+                    <td className="px-4 py-2.5">{(p.carriers as unknown as { name: string } | null)?.name ?? "—"}</td>
+                    <td className="px-4 py-2.5">{p.plan_name ?? p.plan_type}</td>
+                    <td className="num px-4 py-2.5">{p.policy_number ?? "—"}</td>
+                    <td className="num px-4 py-2.5 text-right">{p.monthly_premium != null ? `$${p.monthly_premium}` : "—"}</td>
+                    <td className="num px-4 py-2.5 text-right">{p.subsidy_amount != null ? `$${p.subsidy_amount}` : "—"}</td>
+                    <td className="num px-4 py-2.5 text-right">{p.net_premium != null ? `$${p.net_premium}` : "—"}</td>
+                    <td className="px-4 py-2.5">
                       {STATUS_BADGE(p.status)}
                       {p.termination_date && (
                         <span className="num ml-1 text-xs text-slate-400">{p.termination_date}</span>
                       )}
                     </td>
                     {canManagePolicies && (
-                      <td className="px-4 py-2 text-right">
+                      <td className="px-4 py-2.5 text-right">
                         <Link
                           href={`/clients/${id}?editPolicy=${p.id}`}
                           className="text-xs font-medium text-sapphire hover:underline"

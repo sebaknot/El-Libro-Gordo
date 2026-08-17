@@ -82,26 +82,26 @@ export default async function HouseholdDetailPage({
         </div>
         <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
+            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate">
               <tr>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">DOB</th>
-                <th className="px-4 py-2">Phone</th>
-                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2.5">Name</th>
+                <th className="px-4 py-2.5">DOB</th>
+                <th className="px-4 py-2.5">Phone</th>
+                <th className="px-4 py-2.5">Status</th>
               </tr>
             </thead>
             <tbody>
               {(members ?? []).map((m) => (
                 <tr key={m.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                  <td className="px-4 py-2">
+                  <td className="px-4 py-2.5">
                     <Link href={`/clients/${m.id}`} className="font-medium text-sapphire hover:underline">
                       {m.last_name}, {m.first_name}
                     </Link>
                     {m.is_primary && <span className="ml-2 text-xs text-slate-400">primary</span>}
                   </td>
-                  <td className="px-4 py-2 text-slate">{m.dob ?? "—"}</td>
-                  <td className="px-4 py-2 text-slate">{m.phone ?? "—"}</td>
-                  <td className="px-4 py-2">{STATUS_BADGE(m.status)}</td>
+                  <td className="px-4 py-2.5 text-slate">{m.dob ?? "—"}</td>
+                  <td className="px-4 py-2.5 text-slate">{m.phone ?? "—"}</td>
+                  <td className="px-4 py-2.5">{STATUS_BADGE(m.status)}</td>
                 </tr>
               ))}
               {(!members || members.length === 0) && (

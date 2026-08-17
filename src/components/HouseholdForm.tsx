@@ -30,55 +30,55 @@ export default function HouseholdForm({
       {error && <p className="rounded-md bg-brick/5 p-3 text-sm text-brick">{error}</p>}
 
       <div>
-        <label className="block text-sm font-medium">Household name *</label>
+        <label className="block text-xs font-medium text-slate">Household name *</label>
         <input name="household_name" required defaultValue={values.household_name ?? ""} className={input} />
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Street address</label>
+        <label className="block text-xs font-medium text-slate">Street address</label>
         <input name="address_street" defaultValue={values.address_street ?? ""} className={input} />
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium">City</label>
+          <label className="block text-xs font-medium text-slate">City</label>
           <input name="address_city" defaultValue={values.address_city ?? ""} className={input} />
         </div>
         <div>
-          <label className="block text-sm font-medium">State</label>
+          <label className="block text-xs font-medium text-slate">State</label>
           <input name="address_state" maxLength={2} defaultValue={values.address_state ?? ""} className={input} />
         </div>
         <div>
-          <label className="block text-sm font-medium">ZIP</label>
+          <label className="block text-xs font-medium text-slate">ZIP</label>
           <input name="address_zip" defaultValue={values.address_zip ?? ""} className={input} />
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium">Annual income ($)</label>
+          <label className="block text-xs font-medium text-slate">Annual income ($)</label>
           <input name="annual_income" type="number" step="0.01" min="0" defaultValue={values.annual_income ?? ""} className={input} />
         </div>
         <div>
-          <label className="block text-sm font-medium">Income verified on</label>
+          <label className="block text-xs font-medium text-slate">Income verified on</label>
           <input name="income_verified_date" type="date" defaultValue={values.income_verified_date ?? ""} className={input} />
         </div>
         <div>
-          <label className="block text-sm font-medium">Household size</label>
+          <label className="block text-xs font-medium text-slate">Household size</label>
           <input name="household_size" type="number" min="1" defaultValue={values.household_size ?? ""} className={input} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium">Preferred language</label>
+          <label className="block text-xs font-medium text-slate">Preferred language</label>
           <select name="preferred_language" defaultValue={values.preferred_language ?? "es"} className={input}>
             <option value="es">Español</option>
             <option value="en">English</option>
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium">Preferred channel</label>
+          <label className="block text-xs font-medium text-slate">Preferred channel</label>
           <select name="preferred_channel" defaultValue={values.preferred_channel ?? ""} className={input}>
             <option value="">—</option>
             {["sms", "whatsapp", "email", "call"].map((c) => (

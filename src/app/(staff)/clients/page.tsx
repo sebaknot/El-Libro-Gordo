@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
 import { getDict } from "@/lib/i18n";
 import { CLIENT_COLUMNS } from "@/lib/clients";
 import ClientSearch from "@/components/ClientSearch";
@@ -33,7 +35,7 @@ export default async function ClientsPage() {
 
       <div className="mt-4 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
         <table className="w-full text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
+          <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate">
             <tr>
               <th className="px-4 py-2.5">Name</th>
               <th className="px-4 py-2.5">{t.households}</th>
@@ -61,8 +63,13 @@ export default async function ClientsPage() {
             ))}
             {(!clients || clients.length === 0) && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-400">
-                  No clients yet. Import the book or add one.
+                <td colSpan={5}>
+                  <EmptyState
+                    icon={Users}
+                    message="No clients yet. Import the book or add one."
+                    ctaHref="/clients/new"
+                    ctaLabel={`+ ${t.newClient}`}
+                  />
                 </td>
               </tr>
             )}

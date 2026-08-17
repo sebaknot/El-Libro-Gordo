@@ -1,6 +1,9 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { Link2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
+import SubmitButton from "@/components/SubmitButton";
 import { getDict } from "@/lib/i18n";
 import { STATUS_BADGE } from "@/components/badges";
 import HouseholdPicker from "@/components/HouseholdPicker";
@@ -56,7 +59,7 @@ export default async function LinksPage({
           <HouseholdPicker placeholder={t.search} />
           <div className="flex gap-4">
             <div>
-              <label className="block text-sm font-medium">Purpose</label>
+              <label className="block text-xs font-medium text-slate">Purpose</label>
               <select name="purpose" className={input}>
                 <option value="renewal">Renewal</option>
                 <option value="income_update">Income update</option>
@@ -64,13 +67,11 @@ export default async function LinksPage({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium">Expires in (days)</label>
+              <label className="block text-xs font-medium text-slate">Expires in (days)</label>
               <input name="days" type="number" defaultValue={14} min={1} max={60} className={input + " w-24"} />
             </div>
           </div>
-          <button className="rounded-md bg-sapphire px-5 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
-            {t.generateLinks}
-          </button>
+          <SubmitButton className="px-5 py-2 text-sm">{t.generateLinks}</SubmitButton>
         </form>
       </section>
 
@@ -140,9 +141,9 @@ export default async function LinksPage({
           );
         })}
         {(!links || links.length === 0) && (
-          <p className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
-            No links yet. Generate some above.
-          </p>
+          <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <EmptyState icon={Link2} message="No links yet. Generate some above." />
+          </div>
         )}
       </section>
     </div>

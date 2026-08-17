@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
 import MessageComposer, { type ComposerTemplate } from "@/components/MessageComposer";
 
 const CHANNEL_ICON: Record<string, string> = { sms: "💬", whatsapp: "🟢", email: "✉️" };
@@ -96,9 +98,9 @@ export default async function MessageThreadPage({
           );
         })}
         {(!messages || messages.length === 0) && (
-          <p className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
-            No messages with this client yet.
-          </p>
+          <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <EmptyState icon={MessageSquare} message="No messages with this client yet." />
+          </div>
         )}
       </div>
 

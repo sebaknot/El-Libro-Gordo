@@ -57,7 +57,7 @@ export default async function DashboardPage() {
           <Link
             key={s.label}
             href={s.href}
-            className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:border-sapphire/40"
+            className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:border-sapphire/40 hover:shadow-md"
           >
             <p className="text-sm text-slate">{s.label}</p>
             <p className="mt-1 text-3xl font-bold">{s.value}</p>

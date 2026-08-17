@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import SubmitButton from "@/components/SubmitButton";
 import { requireStaff } from "@/lib/auth";
 import {
   addHouseholdsToCampaign,
@@ -94,15 +95,11 @@ export default async function CampaignBoardPage({
         <div className="flex items-center gap-2">
           {staff.role === "owner" && (
             <form action={runPipelineAutomationNow.bind(null, id)}>
-              <button className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate hover:bg-slate-50">
-                ⟳ Run automation now
-              </button>
+              <SubmitButton variant="secondary">⟳ Run automation now</SubmitButton>
             </form>
           )}
           <form id="bulk-links" action={bulkGenerateLinksForCampaign.bind(null, id)}>
-            <button className="rounded-md bg-sapphire px-4 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
-              Generate links for selected
-            </button>
+            <SubmitButton>Generate links for selected</SubmitButton>
           </form>
         </div>
       </div>

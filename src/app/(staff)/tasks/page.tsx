@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { CheckSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
+import SubmitButton from "@/components/SubmitButton";
 import { requireStaff } from "@/lib/auth";
 import { getDict } from "@/lib/i18n";
 import { STATUS_BADGE } from "@/components/badges";
@@ -29,9 +32,7 @@ export default async function TasksPage({
         <h1 className="text-2xl font-bold">{t.tasks}</h1>
         {staff.role === "owner" && (
           <form action={runAutoTasksNow}>
-            <button className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate hover:bg-slate-50">
-              ⟳ Run checks now
-            </button>
+            <SubmitButton variant="secondary">⟳ Run checks now</SubmitButton>
           </form>
         )}
       </div>
@@ -85,8 +86,8 @@ export default async function TasksPage({
           </li>
         ))}
         {(!tasks || tasks.length === 0) && (
-          <li className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
-            No open tasks. {STATUS_BADGE("done")}
+          <li className="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <EmptyState icon={CheckSquare} message={<>No open tasks. {STATUS_BADGE("done")}</>} />
           </li>
         )}
       </ul>

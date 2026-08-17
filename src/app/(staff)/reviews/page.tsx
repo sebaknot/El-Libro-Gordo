@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { ClipboardCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getDict } from "@/lib/i18n";
+import EmptyState from "@/components/EmptyState";
 
 export default async function ReviewsPage() {
   const supabase = await createClient();
@@ -35,7 +37,7 @@ export default async function ReviewsPage() {
             <li key={r.id}>
               <Link
                 href={`/reviews/${r.id}`}
-                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5 shadow-sm hover:border-sapphire/40"
+                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2.5 shadow-sm hover:border-sapphire/40 hover:shadow-md"
               >
                 <span>
                   <span className="font-medium">{household?.household_name ?? "—"}</span>
@@ -53,8 +55,8 @@ export default async function ReviewsPage() {
           );
         })}
         {(!pending || pending.length === 0) && (
-          <li className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
-            Queue is empty. 🎉
+          <li className="rounded-lg border border-slate-200 bg-white shadow-sm">
+            <EmptyState icon={ClipboardCheck} message="Queue is empty. 🎉" />
           </li>
         )}
       </ul>

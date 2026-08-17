@@ -58,12 +58,12 @@ export default async function ChangesPage({
 
       <form action={action} className="mt-5 space-y-5">
         <div>
-          <label className="block text-sm font-medium">{t.newIncome}</label>
+          <label className="block text-xs font-medium text-slate">{t.newIncome}</label>
           <input name="new_income" inputMode="decimal" placeholder="45000" className={input} />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">{t.employment}</label>
+          <label className="block text-xs font-medium text-slate">{t.employment}</label>
           <textarea name="employment" rows={2} className={input} />
         </div>
 
@@ -109,7 +109,7 @@ export default async function ChangesPage({
         </fieldset>
 
         <div>
-          <label className="block text-sm font-medium">{t.uploadLabel}</label>
+          <label className="block text-xs font-medium text-slate">{t.uploadLabel}</label>
           <input name="income_proof" type="file" accept="image/*,.pdf" className="mt-1 w-full text-sm" />
         </div>
 

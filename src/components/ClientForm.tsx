@@ -37,17 +37,17 @@ export default function ClientForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium">First name *</label>
+          <label className="block text-xs font-medium text-slate">First name *</label>
           <input name="first_name" required defaultValue={values.first_name ?? ""} className={input} />
         </div>
         <div>
-          <label className="block text-sm font-medium">Last name *</label>
+          <label className="block text-xs font-medium text-slate">Last name *</label>
           <input name="last_name" required defaultValue={values.last_name ?? ""} className={input} />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Household *</label>
+        <label className="block text-xs font-medium text-slate">Household *</label>
         <select name="household_id" required defaultValue={values.household_id ?? ""} className={input}>
           <option value="" disabled>Select a household…</option>
           {households.map((h) => (
@@ -58,11 +58,11 @@ export default function ClientForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium">Date of birth</label>
+          <label className="block text-xs font-medium text-slate">Date of birth</label>
           <input name="dob" type="date" defaultValue={values.dob ?? ""} className={input} />
         </div>
         <div>
-          <label className="block text-sm font-medium">
+          <label className="block text-xs font-medium text-slate">
             SSN {values.ssn_last4 ? `(on file: ···${values.ssn_last4})` : ""}
           </label>
           <input
@@ -76,22 +76,22 @@ export default function ClientForm({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium">Phone</label>
+          <label className="block text-xs font-medium text-slate">Phone</label>
           <input name="phone" defaultValue={values.phone ?? ""} className={input} />
         </div>
         <div>
-          <label className="block text-sm font-medium">WhatsApp phone</label>
+          <label className="block text-xs font-medium text-slate">WhatsApp phone</label>
           <input name="whatsapp_phone" defaultValue={values.whatsapp_phone ?? ""} className={input} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium">Email</label>
+          <label className="block text-xs font-medium text-slate">Email</label>
           <input name="email" type="email" defaultValue={values.email ?? ""} className={input} />
         </div>
         <div>
-          <label className="block text-sm font-medium">Status</label>
+          <label className="block text-xs font-medium text-slate">Status</label>
           <select name="status" defaultValue={values.status ?? "active"} className={input}>
             {["active", "pending", "canceled", "medicare_transition", "deceased"].map((s) => (
               <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
@@ -101,12 +101,12 @@ export default function ClientForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Immigration document type</label>
+        <label className="block text-xs font-medium text-slate">Immigration document type</label>
         <input name="immigration_doc_type" defaultValue={values.immigration_doc_type ?? ""} className={input} />
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Summary notes</label>
+        <label className="block text-xs font-medium text-slate">Summary notes</label>
         <textarea name="notes_summary" rows={2} defaultValue={values.notes_summary ?? ""} className={input} />
       </div>
 

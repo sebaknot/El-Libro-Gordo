@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { DollarSign } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
+import SubmitButton from "@/components/SubmitButton";
 import { requireStaff } from "@/lib/auth";
 import { addCommissionRate } from "../actions";
 
@@ -98,9 +101,7 @@ export default async function CommissionRatesPage({
             <label className="block text-xs font-medium text-slate">Notes</label>
             <input name="notes" className={`${input} w-full`} />
           </div>
-          <button className="rounded-md bg-sapphire px-5 py-2 text-sm font-semibold text-white hover:bg-sapphire/90">
-            + Add rate
-          </button>
+          <SubmitButton className="px-5 py-2 text-sm">+ Add rate</SubmitButton>
         </form>
       )}
 
@@ -109,25 +110,25 @@ export default async function CommissionRatesPage({
           <h2 className="text-lg font-semibold">{year}</h2>
           <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
             <table className="w-full text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
+              <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate">
                 <tr>
-                  <th className="px-4 py-2">Carrier</th>
-                  <th className="px-4 py-2">Plan type</th>
-                  <th className="px-4 py-2 text-right">$ / member / month</th>
-                  <th className="px-4 py-2">Notes</th>
+                  <th className="px-4 py-2.5">Carrier</th>
+                  <th className="px-4 py-2.5">Plan type</th>
+                  <th className="px-4 py-2.5 text-right">$ / member / month</th>
+                  <th className="px-4 py-2.5">Notes</th>
                 </tr>
               </thead>
               <tbody>
                 {byYear.get(year)!.map((r) => (
                   <tr key={r.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2.5">
                       {(r.carriers as unknown as { name: string } | null)?.name ?? "—"}
                     </td>
-                    <td className="px-4 py-2">{r.plan_type}</td>
-                    <td className="num px-4 py-2 text-right">
+                    <td className="px-4 py-2.5">{r.plan_type}</td>
+                    <td className="num px-4 py-2.5 text-right">
                       ${Number(r.rate_per_member_month).toFixed(2)}
                     </td>
-                    <td className="px-4 py-2 text-slate">{r.notes ?? ""}</td>
+                    <td className="px-4 py-2.5 text-slate">{r.notes ?? ""}</td>
                   </tr>
                 ))}
               </tbody>
@@ -136,9 +137,12 @@ export default async function CommissionRatesPage({
         </section>
       ))}
       {years.length === 0 && (
-        <p className="mt-8 rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
-          No rates yet.{staff.role === "owner" ? " Add the first one above." : ""}
-        </p>
+        <div className="mt-8 rounded-lg border border-slate-200 bg-white shadow-sm">
+          <EmptyState
+            icon={DollarSign}
+            message={`No rates yet.${staff.role === "owner" ? " Add the first one above." : ""}`}
+          />
+        </div>
       )}
     </div>
   );

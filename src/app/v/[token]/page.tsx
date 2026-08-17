@@ -52,7 +52,7 @@ export default async function DobGatePage({
       )}
       <form action={action} className="mt-5 space-y-4">
         <div>
-          <label htmlFor="dob" className="block text-sm font-medium">{t.dobLabel}</label>
+          <label htmlFor="dob" className="block text-xs font-medium text-slate">{t.dobLabel}</label>
           <input
             id="dob" name="dob" type="date" required
             className="mt-1 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-base focus:border-sapphire focus:outline-none"

@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { DollarSign } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import EmptyState from "@/components/EmptyState";
+import SubmitButton from "@/components/SubmitButton";
 import { requireStaff } from "@/lib/auth";
 import { STATUS_BADGE } from "@/components/badges";
 import { recordCommissionPaymentForm } from "./actions";
@@ -351,14 +354,14 @@ export default async function CommissionsPage({
           </p>
           <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
             <table className="w-full text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
+              <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate">
                 <tr>
-                  <th className="px-4 py-2">Household</th>
-                  <th className="px-4 py-2">Carrier · plan</th>
-                  <th className="px-4 py-2 text-right">Members</th>
-                  <th className="px-4 py-2 text-right">Expected</th>
-                  <th className="px-4 py-2 text-right">Received $</th>
-                  <th className="px-4 py-2"></th>
+                  <th className="px-4 py-2.5">Household</th>
+                  <th className="px-4 py-2.5">Carrier · plan</th>
+                  <th className="px-4 py-2.5 text-right">Members</th>
+                  <th className="px-4 py-2.5 text-right">Expected</th>
+                  <th className="px-4 py-2.5 text-right">Received $</th>
+                  <th className="px-4 py-2.5"></th>
                 </tr>
               </thead>
               <tbody>
@@ -370,14 +373,14 @@ export default async function CommissionsPage({
                   return (
                     <tr
                       key={`${g.householdId}|${g.carrierId}|${g.planType}|${g.planYear}`}
-                      className="border-b border-slate-100 last:border-0"
+                      className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                     >
                       <td className="px-4 py-2 font-medium">{g.householdName}</td>
-                      <td className="px-4 py-2 text-slate">
+                      <td className="px-4 py-2.5 text-slate">
                         {[g.carrierName ?? "no carrier", g.planType, g.planYear].join(" · ")}
                       </td>
-                      <td className="num px-4 py-2 text-right">{g.members}</td>
-                      <td className="num px-4 py-2 text-right">
+                      <td className="num px-4 py-2.5 text-right">{g.members}</td>
+                      <td className="num px-4 py-2.5 text-right">
                         {expected != null ? `$${expected.toFixed(2)}` : "—"}
                       </td>
                       <td colSpan={2} className="px-2 py-1.5">
@@ -406,9 +409,7 @@ export default async function CommissionsPage({
                             placeholder="0.00"
                             className={`${input} num w-28 text-right`}
                           />
-                          <button className="rounded-md bg-sapphire px-3 py-1.5 text-xs font-semibold text-white hover:bg-sapphire/90">
-                            Record
-                          </button>
+                          <SubmitButton className="px-3 py-1.5 text-xs">Record</SubmitButton>
                         </form>
                       </td>
                     </tr>
@@ -426,41 +427,46 @@ export default async function CommissionsPage({
         </h2>
         <div className="mt-3 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase text-slate">
+            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate">
               <tr>
-                <th className="px-4 py-2">Period</th>
-                <th className="px-4 py-2">Household</th>
-                <th className="px-4 py-2">Carrier · plan</th>
-                <th className="px-4 py-2 text-right">Members</th>
-                <th className="px-4 py-2 text-right">Expected</th>
-                <th className="px-4 py-2 text-right">Received</th>
-                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2.5">Period</th>
+                <th className="px-4 py-2.5">Household</th>
+                <th className="px-4 py-2.5">Carrier · plan</th>
+                <th className="px-4 py-2.5 text-right">Members</th>
+                <th className="px-4 py-2.5 text-right">Expected</th>
+                <th className="px-4 py-2.5 text-right">Received</th>
+                <th className="px-4 py-2.5">Status</th>
               </tr>
             </thead>
             <tbody>
               {recorded.map((g) => (
                 <tr key={g.key} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                  <td className="num px-4 py-2">{g.period.slice(0, 7)}</td>
+                  <td className="num px-4 py-2.5">{g.period.slice(0, 7)}</td>
                   <td className="px-4 py-2 font-medium">{g.householdName}</td>
-                  <td className="px-4 py-2 text-slate">
+                  <td className="px-4 py-2.5 text-slate">
                     {[g.carrierName ?? "no carrier", g.planLabel].join(" · ")}
                   </td>
-                  <td className="num px-4 py-2 text-right">{g.members}</td>
-                  <td className="num px-4 py-2 text-right">
+                  <td className="num px-4 py-2.5 text-right">{g.members}</td>
+                  <td className="num px-4 py-2.5 text-right">
                     {g.expected != null ? `$${g.expected.toFixed(2)}` : "—"}
                   </td>
-                  <td className="num px-4 py-2 text-right">
+                  <td className="num px-4 py-2.5 text-right">
                     {g.received != null ? `$${g.received.toFixed(2)}` : "—"}
                   </td>
-                  <td className="px-4 py-2">{STATUS_BADGE(g.status)}</td>
+                  <td className="px-4 py-2.5">{STATUS_BADGE(g.status)}</td>
                 </tr>
               ))}
               {recorded.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-slate-400">
-                    {discrepanciesOnly
-                      ? "No discrepancies — everything reconciles."
-                      : "No payments recorded yet."}
+                  <td colSpan={7}>
+                    <EmptyState
+                      icon={DollarSign}
+                      message={
+                        discrepanciesOnly
+                          ? "No discrepancies — everything reconciles."
+                          : "No payments recorded yet."
+                      }
+                    />
                   </td>
                 </tr>
               )}
