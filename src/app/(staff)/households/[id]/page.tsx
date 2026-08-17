@@ -1,17 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireStaff } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { getDict } from "@/lib/i18n";
 import { CLIENT_COLUMNS } from "@/lib/clients";
 import { STATUS_BADGE } from "@/components/badges";
+import DeleteHousehold from "@/components/DeleteHousehold";
 
 export default async function HouseholdDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { id } = await params;
+  const { error } = await searchParams;
+  const staff = await requireStaff();
   const supabase = await createClient();
   const { t } = await getDict();
 
@@ -33,6 +39,8 @@ export default async function HouseholdDetailPage({
 
   return (
     <div className="max-w-4xl">
+      {error && <p className="mb-4 rounded-md bg-brick/5 p-3 text-sm text-brick">{error}</p>}
+
       <div className="flex items-start justify-between">
         <h1 className="text-2xl font-bold">{household.household_name}</h1>
         <Link
@@ -103,6 +111,10 @@ export default async function HouseholdDetailPage({
           </table>
         </div>
       </section>
+
+      {staff.role === "owner" && (
+        <DeleteHousehold householdId={id} householdName={household.household_name} />
+      )}
     </div>
   );
 }

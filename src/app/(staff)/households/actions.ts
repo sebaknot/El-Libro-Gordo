@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { requireStaff } from "@/lib/auth";
+import { requireStaff, requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { householdSchema, field } from "@/lib/clients";
 
@@ -53,4 +53,36 @@ export async function updateHousehold(id: string, formData: FormData) {
   revalidatePath(`/households/${id}`);
   revalidatePath("/households");
   redirect(`/households/${id}`);
+}
+
+/**
+ * Owner-only, name-confirmed household deletion. All row removal happens in
+ * the admin_delete_household() RPC — one transaction, FK dependency order,
+ * audit_log row written first and never deleted (history survives).
+ */
+export async function deleteHousehold(householdId: string, formData: FormData) {
+  await requireRole(["owner"]);
+  const confirmName = String(formData.get("confirm_name") ?? "");
+
+  const supabase = await createClient();
+  const { data: household } = await supabase
+    .from("households")
+    .select("household_name")
+    .eq("id", householdId)
+    .single();
+  if (!household) redirect("/households");
+
+  if (confirmName !== household.household_name) {
+    redirect(`/households/${householdId}?error=${encodeURIComponent("Confirmation name did not match")}`);
+  }
+
+  const { error } = await supabase.rpc("admin_delete_household", {
+    p_household_id: householdId,
+  });
+  if (error) {
+    redirect(`/households/${householdId}?error=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/households");
+  redirect("/households");
 }
