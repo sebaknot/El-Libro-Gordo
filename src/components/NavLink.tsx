@@ -13,6 +13,7 @@ import {
   Link as LinkIcon,
   MessageSquare,
   Target,
+  UserCog,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -29,6 +30,7 @@ const ICONS: Record<string, LucideIcon> = {
   carriers: Building2,
   commissions: DollarSign,
   tasks: CheckSquare,
+  staff: UserCog,
   export: Download,
 };
 

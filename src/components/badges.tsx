@@ -18,6 +18,7 @@ const COLORS: Record<string, string> = {
   terminated: "bg-brick/10 text-brick",
   locked: "bg-brick/10 text-brick",
   canceled: "bg-slate/10 text-slate",
+  inactive: "bg-slate/10 text-slate",
   deceased: "bg-slate/15 text-slate",
   dismissed: "bg-slate/10 text-slate",
   expired: "bg-slate/10 text-slate",

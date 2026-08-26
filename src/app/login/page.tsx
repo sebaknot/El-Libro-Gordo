@@ -3,9 +3,9 @@ import { login } from "./actions";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; reset?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, reset } = await searchParams;
 
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
@@ -16,6 +16,16 @@ export default async function LoginPage({
         {error === "invalid" && (
           <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">
             Invalid email or password.
+          </p>
+        )}
+        {error === "service" && (
+          <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">
+            Sign-in is temporarily unavailable. Try again in a moment.
+          </p>
+        )}
+        {reset === "1" && (
+          <p className="mt-4 rounded-md bg-sage/10 p-3 text-sm text-sage">
+            ✓ Password updated — sign in with your new password.
           </p>
         )}
         {error === "not_staff" && (
@@ -46,6 +56,12 @@ export default async function LoginPage({
             Sign in
           </button>
         </form>
+
+        <p className="mt-4 text-center text-sm">
+          <a href="/forgot-password" className="text-sapphire hover:underline">
+            Forgot password?
+          </a>
+        </p>
       </div>
     </main>
   );

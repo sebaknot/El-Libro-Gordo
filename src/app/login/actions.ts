@@ -12,7 +12,18 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect("/login?error=invalid");
+    // Users always get a generic message, but the server log distinguishes a
+    // wrong password from an infrastructure problem (network, bad keys, rate
+    // limit) so outages don't masquerade as typos. No staff session exists
+    // yet, so the failure can't go through the audit RPC — this log line is
+    // the record.
+    const credentialsProblem = error.code === "invalid_credentials" || error.status === 400;
+    console.warn(`login failed (${credentialsProblem ? "bad credentials" : "auth service error"})`, {
+      code: error.code,
+      status: error.status,
+      message: error.message,
+    });
+    redirect(credentialsProblem ? "/login?error=invalid" : "/login?error=service");
   }
 
   await logAudit("login", "session", null, { email });

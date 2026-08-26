@@ -20,6 +20,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     { href: "/carriers", label: t.carriers, icon: "carriers" },
     { href: "/commissions", label: t.commissions, icon: "commissions" },
     { href: "/tasks", label: t.tasks, icon: "tasks" },
+    ...(staff.role === "owner" ? [{ href: "/staff", label: t.staff, icon: "staff" }] : []),
   ];
 
   const sectionHeader =
