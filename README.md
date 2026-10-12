@@ -13,10 +13,12 @@ SheetJS exports, Vercel hosting.
 ## Setup
 
 1. **Create a Supabase project** (supabase.com → New project).
-2. **Run the migration**: open the SQL editor and run
-   `supabase/migrations/0001_schema.sql` in full. It creates every table, RLS
+2. **Run the migrations**: open the SQL editor and run, in order,
+   `supabase/migrations/0001_schema.sql`, `0002_delete_household.sql`, and
+   `0003_import_batches.sql`, each in full. They create every table, RLS
    policies, the append-only audit log, pgcrypto SSN functions, trigram search
-   indexes, and the private `documents` storage bucket.
+   indexes, the private `documents` storage bucket, and the import/undo
+   machinery.
 3. **Configure env vars**: copy `.env.example` to `.env.local` and fill in the
    project URL, anon key, service-role key, and a generated
    `SSN_ENCRYPTION_KEY` (`openssl rand -base64 32`). Keep that key backed up —
@@ -33,25 +35,50 @@ SheetJS exports, Vercel hosting.
    On first sign-in she is forced through TOTP enrollment (Google
    Authenticator / 1Password) before any page loads. 2FA is not optional.
 
-## Importing the book (day-one task)
+## Importing clients
+
+### Web import wizard (`/import`, owner & agent only)
+
+Upload an `.xlsx` or `.csv` (max 10 MB / 5,000 rows; macro and legacy `.xls`
+files are rejected by file signature, not just extension) and walk four steps:
+
+1. **Upload** — pick the file (and sheet, for multi-sheet workbooks), or start
+   from the downloadable template. The parsed rows are held server-side,
+   pgcrypto-encrypted, for at most 30 minutes; the raw file is never stored.
+2. **Map columns** — headers are auto-detected in English *and* Spanish
+   ("Nombre", "Fecha de nacimiento", "Aseguradora"…); fix any guess with a
+   dropdown, and optionally save the mapping for repeat uploads.
+3. **Preview** — nothing is written yet. Row-by-row statuses
+   (New / Duplicate / Warning / Error), duplicate detection against the book
+   and within the file (SSN last-4 + DOB, name + DOB, phone, policy #), a
+   per-upload duplicate policy (skip · update-blanks-only · import as new),
+   and a downloadable problem-rows CSV. Rows missing DOB/phone import with a
+   **data cleanup task**, same as the CLI. SSNs appear masked (`***-**-1234`)
+   everywhere; DOBs are never echoed back.
+4. **Import & report** — runs server-side; a mid-run failure removes
+   everything the batch created (nothing partial survives). Every upload is
+   recorded in `import_batches`, created records are tagged with the batch id,
+   and the history page offers an owner-only **Undo** that deletes only
+   batch-created records nobody has touched since. Audit log gets
+   `import_started` / `import_completed` / `import_undone` (counts only — no
+   client data).
+
+Uploads are rate-limited (10/hour/user). Cell values are sanitized (length
+caps, control characters, and leading `=`, `+`, `-`, `@` neutralized) so the
+Excel export can never execute a smuggled formula.
+
+### CLI (same engine)
 
 ```bash
-# Preview without writing anything:
+# Preview without writing anything (works offline):
 npm run import:book -- --file ./book.xlsx --dry-run
 
 # Real import:
 npm run import:book -- --file ./book.xlsx
 ```
 
-The script groups rows by household, creates households → clients → carriers →
-policies, encrypts SSNs, and writes `import-report-<timestamp>.json`. Any row
-missing a DOB or phone (both required for Phase 2 magic links) gets an
-auto-generated **data cleanup task** that shows on the dashboard.
-
-Recognized columns (English/Spanish aliases, order-independent):
-`first_name, last_name, dob, phone, email, ssn, household, address, city,
-state, zip, annual_income, household_size, language, carrier, plan_name,
-plan_year, policy_number, monthly_premium, subsidy`.
+The CLI shares `src/lib/import/` with the wizard — identical column
+detection, parsing, grouping, duplicate rules, and cleanup-task creation.
 
 ## Security notes
 

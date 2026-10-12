@@ -21,6 +21,12 @@ const COLORS: Record<string, string> = {
   inactive: "bg-slate/10 text-slate",
   deceased: "bg-slate/15 text-slate",
   dismissed: "bg-slate/10 text-slate",
+  uploaded: "bg-sapphire/10 text-sapphire",
+  mapped: "bg-sapphire/10 text-sapphire",
+  importing: "bg-amber-600/15 text-amber-700",
+  imported: "bg-sage/15 text-sage",
+  failed: "bg-brick/10 text-brick",
+  undone: "bg-slate/10 text-slate",
   expired: "bg-slate/10 text-slate",
 };
 

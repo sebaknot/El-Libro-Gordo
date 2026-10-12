@@ -11,7 +11,10 @@ export type AuditAction =
   | "login"
   | "login_failed"
   | "link_opened"
-  | "link_submitted";
+  | "link_submitted"
+  | "import_started"
+  | "import_completed"
+  | "import_undone";
 
 /** Writes an audit_log row via the security-definer log_audit() RPC. */
 export async function logAudit(

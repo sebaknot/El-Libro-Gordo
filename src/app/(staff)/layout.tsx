@@ -11,6 +11,9 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   const book = [
     { href: "/clients", label: t.clients, icon: "clients" },
     { href: "/households", label: t.households, icon: "households" },
+    ...(staff.role === "owner" || staff.role === "agent"
+      ? [{ href: "/import", label: t.import, icon: "import" }]
+      : []),
     { href: "/links", label: t.links, icon: "links" },
     { href: "/reviews", label: t.reviews, icon: "reviews" },
     { href: "/messages", label: t.messages, icon: "messages" },
