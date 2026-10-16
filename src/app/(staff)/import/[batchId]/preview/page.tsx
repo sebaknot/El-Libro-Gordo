@@ -51,6 +51,11 @@ const COPY = {
     errors: {
       not_ready: "This upload isn't ready to import — check the column matching first.",
       expired: "This upload expired. Please upload the file again.",
+      missing_function:
+        "The database is missing the import functions — run supabase/migrations/0003_import_batches.sql in the Supabase SQL editor.",
+      server_config:
+        "The server is missing SSN_ENCRYPTION_KEY — add it in Vercel's environment variables and redeploy.",
+      error: "The upload couldn't be read back. The server log has the exact reason.",
       import_failed:
         "The import hit a problem partway and everything it had created was removed — nothing partial was saved. Try again, and if it keeps failing, send us the file.",
     } as Record<string, string>,
@@ -93,6 +98,11 @@ const COPY = {
     errors: {
       not_ready: "Esta subida no está lista — revise primero el emparejado de columnas.",
       expired: "Esta subida venció. Vuelva a subir el archivo.",
+      missing_function:
+        "A la base de datos le faltan las funciones de importación — ejecute supabase/migrations/0003_import_batches.sql en el editor SQL de Supabase.",
+      server_config:
+        "Al servidor le falta SSN_ENCRYPTION_KEY — agréguela en las variables de entorno de Vercel y vuelva a desplegar.",
+      error: "No se pudo leer la subida. El registro del servidor tiene la razón exacta.",
       import_failed:
         "La importación falló a medias y todo lo que había creado fue eliminado — no quedó nada a medias. Intente de nuevo y, si sigue fallando, envíenos el archivo.",
     } as Record<string, string>,
@@ -129,20 +139,24 @@ export default async function PreviewPage({
     notFound();
   }
 
-  const payload = await readBatchPayload(batchId);
-  if (!payload || !payload.sheets[batch.sheet_name]) {
+  const read = await readBatchPayload(batchId);
+  if (!read.ok || !read.payload.sheets[batch.sheet_name]) {
+    const reason = read.ok ? "expired" : read.reason;
     return (
       <div className="max-w-2xl">
         <h1 className="text-2xl font-bold">{t.title}</h1>
-        <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">{t.expired}</p>
+        <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">
+          {t.errors[reason] ?? t.errors.expired}
+        </p>
         <p className="mt-4">
           <Link href="/import" className="text-sm text-sapphire hover:underline">
-            ← {COPY[locale === "en" ? "en" : "es"].backMap}
+            ← {t.backMap}
           </Link>
         </p>
       </div>
     );
   }
+  const payload = read.payload;
 
   // Server-side validation — this exact computation re-runs at import time.
   const snapshot = await loadExistingSnapshot();

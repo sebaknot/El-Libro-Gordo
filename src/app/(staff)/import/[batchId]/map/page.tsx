@@ -27,6 +27,12 @@ const COPY = {
     continue: "Continue to preview",
     expired:
       "This upload expired (uploads are kept for 30 minutes for privacy). Please upload the file again.",
+    missing_function:
+      "The database is missing the import functions — run supabase/migrations/0003_import_batches.sql in the Supabase SQL editor, then upload again.",
+    server_config:
+      "The server is missing SSN_ENCRYPTION_KEY — add it in Vercel's environment variables and redeploy.",
+    readError: "The upload couldn't be read back. The server log has the exact reason.",
+    notFoundMsg: "This upload no longer exists — it may have been discarded.",
     back: "← Upload a different file",
     tooBig: "This sheet has more than 5,000 rows and can't be used.",
   },
@@ -47,6 +53,12 @@ const COPY = {
     continue: "Continuar a la vista previa",
     expired:
       "Esta subida venció (se guardan 30 minutos por privacidad). Vuelva a subir el archivo.",
+    missing_function:
+      "A la base de datos le faltan las funciones de importación — ejecute supabase/migrations/0003_import_batches.sql en el editor SQL de Supabase y vuelva a subir.",
+    server_config:
+      "Al servidor le falta SSN_ENCRYPTION_KEY — agréguela en las variables de entorno de Vercel y vuelva a desplegar.",
+    readError: "No se pudo leer la subida. El registro del servidor tiene la razón exacta.",
+    notFoundMsg: "Esta subida ya no existe — puede haber sido descartada.",
     back: "← Subir otro archivo",
     tooBig: "Esta hoja tiene más de 5,000 filas y no se puede usar.",
   },
@@ -73,13 +85,21 @@ export default async function MapColumnsPage({
     .single();
   if (!batch || !["uploaded", "mapped"].includes(batch.status)) notFound();
 
-  const payload = await readBatchPayload(batchId);
+  const read = await readBatchPayload(batchId);
 
-  if (!payload) {
+  if (!read.ok) {
+    const message =
+      read.reason === "missing_function"
+        ? t.missing_function
+        : read.reason === "server_config"
+          ? t.server_config
+          : read.reason === "expired"
+            ? t.expired
+            : t.readError;
     return (
       <div className="max-w-2xl">
         <h1 className="text-2xl font-bold">{t.title}</h1>
-        <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">{t.expired}</p>
+        <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">{message}</p>
         <p className="mt-4">
           <Link href="/import" className="text-sm text-sapphire hover:underline">
             {t.back}
@@ -88,6 +108,7 @@ export default async function MapColumnsPage({
       </div>
     );
   }
+  const payload = read.payload;
 
   const sheetNames = Object.keys(payload.sheets);
   const sheetName =

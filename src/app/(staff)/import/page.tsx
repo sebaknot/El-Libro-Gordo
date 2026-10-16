@@ -26,6 +26,10 @@ const COPY = {
       empty: "That file doesn't seem to have any rows.",
       rate_limited: "That's a lot of uploads in one hour — please wait a bit and try again.",
       save_failed: "Something went wrong saving the upload. Try again.",
+      insert_failed: "The upload couldn't be recorded. Try again — if it keeps happening, the server log has the details.",
+      stash_failed: "The file was read but couldn't be stored securely. The server log has the exact reason.",
+      missing_function: "The database is missing the import functions — run supabase/migrations/0003_import_batches.sql in the Supabase SQL editor, then try again.",
+      server_config: "The server is missing SSN_ENCRYPTION_KEY — add it in Vercel's environment variables, redeploy, then try again.",
     } as Record<string, string>,
   },
   es: {
@@ -48,6 +52,10 @@ const COPY = {
       empty: "Ese archivo no parece tener filas.",
       rate_limited: "Son muchas subidas en una hora — espere un poco e intente de nuevo.",
       save_failed: "Algo falló al guardar la subida. Intente de nuevo.",
+      insert_failed: "No se pudo registrar la subida. Intente de nuevo — si sigue pasando, el registro del servidor tiene los detalles.",
+      stash_failed: "El archivo se leyó pero no se pudo guardar de forma segura. El registro del servidor tiene la razón exacta.",
+      missing_function: "A la base de datos le faltan las funciones de importación — ejecute supabase/migrations/0003_import_batches.sql en el editor SQL de Supabase e intente de nuevo.",
+      server_config: "Al servidor le falta SSN_ENCRYPTION_KEY — agréguela en las variables de entorno de Vercel, vuelva a desplegar e intente de nuevo.",
     } as Record<string, string>,
   },
 };

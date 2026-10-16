@@ -77,8 +77,8 @@ export async function GET(
     }
   } else if (batch.sheet_name && batch.mapping) {
     // Pre-import: recompute from the server-held payload.
-    const payload = await readBatchPayload(batchId);
-    const sheet = payload?.sheets[batch.sheet_name];
+    const read = await readBatchPayload(batchId);
+    const sheet = read.ok ? read.payload.sheets[batch.sheet_name] : undefined;
     if (!sheet) return NextResponse.json({ error: "expired" }, { status: 410 });
     const snapshot = await loadExistingSnapshot();
     const mapped = applyMapping(sheet.rows, batch.mapping as Record<string, string>);

@@ -1,0 +1,17 @@
+import { chromium } from "playwright-core";
+import fs from "node:fs";
+const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+const ctx = await browser.newContext({ baseURL: "http://127.0.0.1:3101" });
+const cookies = JSON.parse(fs.readFileSync(process.env.E2E_COOKIES_FILE, "utf8"));
+await ctx.addCookies(cookies.map((c) => ({ ...c, domain: "127.0.0.1", path: "/", httpOnly: true, secure: false })));
+const page = await ctx.newPage();
+await page.goto("/import", { waitUntil: "networkidle" });
+await page.setInputFiles('input[type="file"]', new URL("./fixtures/fake-book.csv", import.meta.url).pathname);
+await page.getByRole("button", { name: /Upload and continue/ }).click();
+await page.waitForURL(/error=/, { timeout: 30000 });
+console.log("URL:", page.url());
+const body = await page.textContent("main");
+console.log("shows specific error:", body.includes("missing the import functions") ? "YES" : "NO");
+const state = await (await fetch("http://127.0.0.1:4545/__state")).json();
+console.log("batch status after failure:", state.db.import_batches[0]?.status);
+await browser.close();

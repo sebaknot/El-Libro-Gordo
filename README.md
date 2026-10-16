@@ -67,6 +67,30 @@ Uploads are rate-limited (10/hour/user). Cell values are sanitized (length
 caps, control characters, and leading `=`, `+`, `-`, `@` neutralized) so the
 Excel export can never execute a smuggled formula.
 
+**If the wizard stalls**: every step logs a line like
+`[import] step=stash_payload batch=<id> FAILED code=… message=…` (codes and
+messages only — never row data) to the server log (Vercel → Functions logs),
+and the UI names the likely fix. Run `supabase/checks/verify_import_setup.sql`
+in the Supabase SQL editor to confirm the import functions, grants, and
+columns from migration 0003 are all in place. Stuck batches can be resumed or
+discarded from the history page.
+
+### Local end-to-end harness (no real credentials)
+
+`e2e/` contains a mock of the Supabase API surface the app uses plus a
+Playwright driver that walks the whole wizard with fake data:
+
+```bash
+npm run build
+node e2e/mock-supabase.mjs &                                # mock API :4545
+node e2e/make-cookies.mjs > /tmp/cookies.json               # fake owner session
+NODE_OPTIONS="--import $PWD/e2e/fetch-shim.mjs" \
+  NEXT_PUBLIC_SUPABASE_URL=https://placeholder-e2e.supabase.co \
+  NEXT_PUBLIC_SUPABASE_ANON_KEY=x SUPABASE_SERVICE_ROLE_KEY=x \
+  SSN_ENCRYPTION_KEY=test npx next start -p 3101 &
+E2E_COOKIES_FILE=/tmp/cookies.json node e2e/run-wizard.mjs  # 24-step trace
+```
+
 ### CLI (same engine)
 
 ```bash

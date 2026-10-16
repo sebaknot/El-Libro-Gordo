@@ -1,0 +1,4 @@
+Nombre,Apellido,Fecha de nacimiento,Teléfono,Seguro Social,Familia,Aseguradora,Prima,Número de póliza
+Maria,Prueba,01/15/1985,(305) 555-0101,900-11-2222,Prueba,Azul Falso,350,FAKE-001
+Jose,Prueba,06/02/1980,3055550102,900-11-2223,Prueba,Azul Falso,0,FAKE-002
+Carlos,SinDatos,,,,,,,

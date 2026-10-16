@@ -19,19 +19,52 @@ export async function requireImportAccess() {
 }
 
 /**
+ * Step logger: error message + code ONLY — never row data, SSNs, or DOBs.
+ */
+export function logImportStep(
+  step: string,
+  batchId: string | null,
+  error?: { code?: string | null; message?: string | null } | null
+) {
+  if (error) {
+    console.error(
+      `[import] step=${step} batch=${batchId ?? "-"} FAILED code=${error.code ?? "-"} message=${error.message ?? "-"}`
+    );
+  } else {
+    console.log(`[import] step=${step} batch=${batchId ?? "-"} ok`);
+  }
+}
+
+/** Why a payload read failed, so the UI can say something specific. */
+export type PayloadReadResult =
+  | { ok: true; payload: StashedPayload }
+  | { ok: false; reason: "expired" | "missing_function" | "server_config" | "error" };
+
+/**
  * Decrypt + return the stashed rows. Server-side ONLY — this contains full
  * SSNs and DOBs and must never be exposed as a server action or sent to the
  * browser whole. Pages derive masked views from it.
  */
-export async function readBatchPayload(batchId: string): Promise<StashedPayload | null> {
+export async function readBatchPayload(batchId: string): Promise<PayloadReadResult> {
   await requireImportAccess();
+  if (!process.env.SSN_ENCRYPTION_KEY) {
+    logImportStep("read_payload", batchId, { code: "ENV", message: "SSN_ENCRYPTION_KEY is not set" });
+    return { ok: false, reason: "server_config" };
+  }
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("import_read_payload", {
     p_batch_id: batchId,
-    p_key: process.env.SSN_ENCRYPTION_KEY!,
+    p_key: process.env.SSN_ENCRYPTION_KEY,
   });
-  if (error || !data) return null;
-  return data as StashedPayload;
+  if (error) {
+    logImportStep("read_payload", batchId, error);
+    if (error.code === "PGRST202") return { ok: false, reason: "missing_function" };
+    if (/batch expired/i.test(error.message ?? "")) return { ok: false, reason: "expired" };
+    return { ok: false, reason: "error" };
+  }
+  if (!data) return { ok: false, reason: "expired" };
+  logImportStep("read_payload", batchId);
+  return { ok: true, payload: data as StashedPayload };
 }
 
 /** DB snapshot used for duplicate detection (server-side only). */

@@ -6,6 +6,7 @@ import { requireImportAccess } from "@/lib/import/server";
 import { STATUS_BADGE } from "@/components/badges";
 import EmptyState from "@/components/EmptyState";
 import UndoImportButton from "@/components/UndoImportButton";
+import DiscardImportButton from "@/components/DiscardImportButton";
 
 const COPY = {
   en: {
@@ -25,6 +26,11 @@ const COPY = {
     yes: "Yes, undo it",
     no: "Cancel",
     empty: "No imports yet.",
+    resume: "Resume",
+    discard: "Discard…",
+    discardConfirm: "Remove this unfinished upload? Nothing was imported from it.",
+    discardYes: "Yes, discard",
+    discarded: "✓ Upload discarded.",
     createdCell: (c: number, h: number, p: number) => `${c} clients · ${h} households · ${p} policies`,
   },
   es: {
@@ -44,6 +50,11 @@ const COPY = {
     yes: "Sí, deshacer",
     no: "Cancelar",
     empty: "Aún no hay importaciones.",
+    resume: "Continuar",
+    discard: "Descartar…",
+    discardConfirm: "¿Quitar esta subida sin terminar? No se importó nada de ella.",
+    discardYes: "Sí, descartar",
+    discarded: "✓ Subida descartada.",
     createdCell: (c: number, h: number, p: number) => `${c} clientes · ${h} hogares · ${p} pólizas`,
   },
 };
@@ -51,10 +62,10 @@ const COPY = {
 export default async function ImportHistoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; undone?: string }>;
+  searchParams: Promise<{ error?: string; undone?: string; discarded?: string }>;
 }) {
   const staff = await requireImportAccess();
-  const { error, undone } = await searchParams;
+  const { error, undone, discarded } = await searchParams;
   const { locale } = await getDict();
   const t = COPY[locale];
   const supabase = await createClient();
@@ -81,6 +92,9 @@ export default async function ImportHistoryPage({
 
       {error && <p className="mt-4 rounded-md bg-brick/5 p-3 text-sm text-brick">{error}</p>}
       {undone === "1" && <p className="mt-4 rounded-md bg-sage/10 p-3 text-sm text-sage">{t.undone}</p>}
+      {discarded === "1" && (
+        <p className="mt-4 rounded-md bg-sage/10 p-3 text-sm text-sage">{t.discarded}</p>
+      )}
 
       <div className="mt-6 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
         <table className="w-full text-sm">
@@ -119,12 +133,33 @@ export default async function ImportHistoryPage({
                   <td className="num px-4 py-2.5 text-right">{b.skipped_rows}</td>
                   <td className="px-4 py-2.5">{STATUS_BADGE(b.status)}</td>
                   <td className="px-4 py-2.5 text-right">
-                    {b.status === "imported" && staff.role === "owner" && (
-                      <UndoImportButton
-                        batchId={b.id}
-                        labels={{ undo: t.undo, confirmText: t.confirmText, yes: t.yes, no: t.no }}
-                      />
-                    )}
+                    <div className="flex items-center justify-end gap-2">
+                      {["uploaded", "mapped"].includes(b.status) && (
+                        <Link
+                          href={b.status === "uploaded" ? `/import/${b.id}/map` : `/import/${b.id}/preview`}
+                          className="rounded-md bg-sapphire px-3 py-1.5 text-xs font-semibold text-white hover:bg-sapphire/90"
+                        >
+                          {t.resume}
+                        </Link>
+                      )}
+                      {["uploaded", "mapped", "expired", "failed", "importing"].includes(b.status) && (
+                        <DiscardImportButton
+                          batchId={b.id}
+                          labels={{
+                            discard: t.discard,
+                            confirmText: t.discardConfirm,
+                            yes: t.discardYes,
+                            no: t.no,
+                          }}
+                        />
+                      )}
+                      {b.status === "imported" && staff.role === "owner" && (
+                        <UndoImportButton
+                          batchId={b.id}
+                          labels={{ undo: t.undo, confirmText: t.confirmText, yes: t.yes, no: t.no }}
+                        />
+                      )}
+                    </div>
                   </td>
                 </tr>
               );
