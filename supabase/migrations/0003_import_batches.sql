@@ -121,7 +121,7 @@ alter table public.audit_log add constraint audit_log_action_check
 -- ---------------------------------------------------------------------------
 
 create or replace function public.import_stash_payload(p_batch_id uuid, p_payload jsonb, p_key text)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, extensions as $$
 begin
   if public.staff_role() not in ('owner', 'agent') then
     raise exception 'not authorized';
@@ -136,7 +136,7 @@ begin
 end $$;
 
 create or replace function public.import_read_payload(p_batch_id uuid, p_key text)
-returns jsonb language plpgsql security definer set search_path = public as $$
+returns jsonb language plpgsql security definer set search_path = public, extensions as $$
 declare
   v_payload jsonb;
 begin

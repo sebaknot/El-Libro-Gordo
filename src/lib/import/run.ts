@@ -128,13 +128,22 @@ export async function runImport(args: {
     return error?.message;
   }
 
-  async function storeSsn(clientId: string, ssn: string) {
-    if (!ssnKey) return;
-    await supabase.rpc("set_client_ssn_admin", {
+  /** Returns an error message when the SSN could not be stored (never the SSN). */
+  async function storeSsn(clientId: string, ssn: string): Promise<string | null> {
+    if (!ssnKey) return "encryption key not configured";
+    const { error } = await supabase.rpc("set_client_ssn_admin", {
       p_client_id: clientId,
       p_ssn: ssn,
       p_key: ssnKey,
     });
+    if (error) {
+      // Code + message only — the SSN itself is never logged.
+      console.error(
+        `[import] step=store_ssn client=${clientId} FAILED code=${error.code ?? "-"} message=${error.message ?? "-"}`
+      );
+      return error.message ?? "SSN could not be stored";
+    }
+    return null;
   }
 
   async function createCleanupTask(clientId: string, householdId: string, r: ValidatedRow) {
@@ -228,7 +237,8 @@ export async function runImport(args: {
       if (Object.keys(patch).length > 0) {
         await supabase.from("clients").update(patch).eq("id", target.id);
       }
-      if (!target.ssn_last4 && r.clean.ssn) await storeSsn(target.id, r.clean.ssn);
+      let updateSsnError: string | null = null;
+      if (!target.ssn_last4 && r.clean.ssn) updateSsnError = await storeSsn(target.id, r.clean.ssn);
       // A policy number we haven't seen yet still gets added.
       if (r.clean.policy_number || r.clean.plan_name || r.clean.carrier) {
         const { data: existingPolicy } = r.clean.policy_number
@@ -248,6 +258,7 @@ export async function runImport(args: {
         outcome: "updated",
         ssn: maskSsn(r.clean.ssn_last4),
         issues: r.issues,
+        note: updateSsnError ? "SSN could not be stored" : undefined,
       });
     }
 
@@ -300,17 +311,21 @@ export async function runImport(args: {
         if (i === 0) primaryClientId = client.id;
         counts.clients++;
 
-        if (c.ssn) await storeSsn(client.id, c.ssn);
+        const ssnError = c.ssn ? await storeSsn(client.id, c.ssn) : null;
         const policyError = await insertPolicy(client.id, h.id, member);
         await createCleanupTask(client.id, h.id, member);
 
+        const notes = [
+          ssnError ? "SSN could not be stored" : null,
+          policyError ? "policy could not be added" : null,
+        ].filter(Boolean);
         report.push({
           row: member.row,
           name: rowName(member),
           outcome: "created",
           ssn: maskSsn(c.ssn_last4),
           issues: member.issues,
-          note: policyError ? "policy could not be added" : undefined,
+          note: notes.length > 0 ? notes.join("; ") : undefined,
         });
       }
 

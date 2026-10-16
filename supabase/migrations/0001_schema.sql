@@ -1,6 +1,8 @@
 -- El Libro Gordo — Phase 1 schema
 -- Run in the Supabase SQL editor (or `supabase db push`).
 
+-- On Supabase this is preinstalled in the "extensions" schema; functions that
+-- call pgcrypto must therefore carry search_path = public, extensions.
 create extension if not exists pgcrypto;
 create extension if not exists pg_trgm;
 
@@ -377,7 +379,7 @@ end $$;
 -- ---------------------------------------------------------------------------
 
 create or replace function public.set_client_ssn(p_client_id uuid, p_ssn text, p_key text)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, extensions as $$
 declare
   v_digits text := regexp_replace(p_ssn, '\D', '', 'g');
 begin
@@ -396,7 +398,7 @@ begin
 end $$;
 
 create or replace function public.reveal_client_ssn(p_client_id uuid, p_key text)
-returns text language plpgsql security definer set search_path = public as $$
+returns text language plpgsql security definer set search_path = public, extensions as $$
 declare
   v_ssn text;
 begin
@@ -412,7 +414,7 @@ end $$;
 
 -- Service-role-only variant used by the one-time import script (no staff session).
 create or replace function public.set_client_ssn_admin(p_client_id uuid, p_ssn text, p_key text)
-returns void language plpgsql security definer set search_path = public as $$
+returns void language plpgsql security definer set search_path = public, extensions as $$
 declare
   v_digits text := regexp_replace(p_ssn, '\D', '', 'g');
 begin

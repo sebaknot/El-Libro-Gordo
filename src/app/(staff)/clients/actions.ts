@@ -93,7 +93,14 @@ export async function revealSsn(clientId: string): Promise<string | null> {
     p_client_id: clientId,
     p_key: process.env.SSN_ENCRYPTION_KEY!,
   });
-  if (error) return null;
+  if (error) {
+    // Code + message only — never the SSN. A 42883 here means pgcrypto isn't
+    // on the function's search_path (migration 0004).
+    console.error(
+      `[ssn] step=reveal client=${clientId} FAILED code=${error.code ?? "-"} message=${error.message ?? "-"}`
+    );
+    return null;
+  }
   return (data as string | null) ?? null;
 }
 
